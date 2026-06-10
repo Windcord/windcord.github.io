@@ -40,7 +40,7 @@ const DMProfilePanel = ({ user, me, servers = [], topSlot }: Props): JSX.Element
         </div>
       ) : null}
 
-      <div className="discord-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <div className="wind-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto">
         {user?.bannerImageUrl
           ? <img src={resolveMediaUrl(user.bannerImageUrl) ?? ""} alt="" className="h-24 w-full object-cover flex-shrink-0" />
           : <div className="h-24 flex-shrink-0" style={{ background: user?.bannerColor ?? "linear-gradient(135deg, var(--wc-active-top), var(--wc-active-bottom))" }} />
@@ -66,25 +66,25 @@ const DMProfilePanel = ({ user, me, servers = [], topSlot }: Props): JSX.Element
             </div>
               <div className="pt-12">
               <p className="truncate text-xl font-bold text-white">{user.nickname?.trim() || user.username}</p>
-              <p className="truncate text-xs text-discord-muted">@{user.username}</p>
-              <p className="mt-0.5 text-xs text-discord-muted">{user.customStatus?.trim() || formatStatusLabel(user.status)}</p>
+              <p className="truncate text-xs text-wind-muted">@{user.username}</p>
+              <p className="mt-0.5 text-xs text-wind-muted">{user.customStatus?.trim() || formatStatusLabel(user.status)}</p>
 
               <div className={`mt-4 rounded-2xl border border-white/[0.05] p-3 ${accentBg ? "bg-black/20" : "bg-black/20 backdrop-blur-sm"}`}>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-discord-muted">About Me</p>
-                <p className="mt-1 whitespace-pre-wrap text-sm text-discord-text">{user.aboutMe || "No bio set."}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-wind-muted">About Me</p>
+                <p className="mt-1 whitespace-pre-wrap text-sm text-wind-text">{user.aboutMe || "No bio set."}</p>
 
                 {memberSince || friendsSince ? (
                   <div className="mt-4 border-t border-white/[0.06] pt-4 space-y-3">
                     {memberSince ? (
                       <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-wide text-discord-muted">Windcord Member Since</p>
-                        <p className="mt-1 text-sm text-discord-text">{memberSince}</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-wind-muted">Windcord Member Since</p>
+                        <p className="mt-1 text-sm text-wind-text">{memberSince}</p>
                       </div>
                     ) : null}
                     {friendsSince ? (
                       <div>
-                        <p className="text-[11px] font-semibold uppercase tracking-wide text-discord-muted">Friends Since</p>
-                        <p className="mt-1 text-sm text-discord-text">{friendsSince}</p>
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-wind-muted">Friends Since</p>
+                        <p className="mt-1 text-sm text-wind-text">{friendsSince}</p>
                       </div>
                     ) : null}
                   </div>
@@ -97,9 +97,9 @@ const DMProfilePanel = ({ user, me, servers = [], topSlot }: Props): JSX.Element
                     className="flex w-full items-center justify-between p-3 text-left"
                     onClick={() => setServersExpanded((v) => !v)}
                   >
-                    <p className="text-[11px] font-semibold uppercase tracking-wide text-discord-muted">Mutual Servers — {mutualServers.length}</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-wide text-wind-muted">Mutual Servers — {mutualServers.length}</p>
                     <svg
-                      className={`h-3 w-3 flex-shrink-0 text-discord-muted transition-transform duration-150 ${serversExpanded ? "rotate-180" : ""}`}
+                      className={`h-3 w-3 flex-shrink-0 text-wind-muted transition-transform duration-150 ${serversExpanded ? "rotate-180" : ""}`}
                       viewBox="0 0 12 12"
                       fill="currentColor"
                     >
@@ -114,7 +114,7 @@ const DMProfilePanel = ({ user, me, servers = [], topSlot }: Props): JSX.Element
                             ? <img src={resolveMediaUrl(server.iconUrl) ?? ""} alt={server.name} className="h-8 w-8 rounded-full object-cover flex-shrink-0" />
                             : <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,var(--wc-active-top),var(--wc-active-bottom))] text-xs font-bold text-white">{server.name.charAt(0).toUpperCase()}</div>
                           }
-                          <span className="truncate text-sm text-discord-text">{server.name}</span>
+                          <span className="truncate text-sm text-wind-text">{server.name}</span>
                         </div>
                       ))}
                     </div>
@@ -124,7 +124,7 @@ const DMProfilePanel = ({ user, me, servers = [], topSlot }: Props): JSX.Element
               </div>
             </>
           ) : (
-            <div className="wc-surface-card mt-4 rounded-2xl p-3 text-sm text-discord-muted">Select a DM to view profile details.</div>
+            <div className="wc-surface-card mt-4 rounded-2xl p-3 text-sm text-wind-muted">Select a DM to view profile details.</div>
           )}
         </div>
       </div>

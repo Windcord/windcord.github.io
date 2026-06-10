@@ -61,10 +61,10 @@ const InputDialog = ({
             onSubmit={submit}
           >
             <h2 className="text-lg font-semibold">{title}</h2>
-            {message ? <p className="mt-1 text-sm text-discord-muted">{message}</p> : null}
+            {message ? <p className="mt-1 text-sm text-wind-muted">{message}</p> : null}
 
             <input
-              className="mt-3 w-full rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2 text-sm text-white outline-none ring-1 ring-transparent transition focus:border-[rgba(124,153,255,0.3)] focus:ring-discord-blurple"
+              className="mt-3 w-full rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2 text-sm text-white outline-none ring-1 ring-transparent transition focus:border-[rgba(124,153,255,0.3)] focus:ring-wind-accent"
               value={value}
               onChange={(event) => setValue(event.target.value)}
               placeholder={placeholder}
@@ -72,7 +72,7 @@ const InputDialog = ({
             />
 
             <div className="mt-4 flex justify-end gap-2">
-              <button type="button" onClick={onCancel} className="rounded-xl px-3 py-1.5 text-sm text-discord-muted transition hover:bg-white/[0.05] hover:text-white">
+              <button type="button" onClick={onCancel} className="rounded-xl px-3 py-1.5 text-sm text-wind-muted transition hover:bg-white/[0.05] hover:text-white">
                 Cancel
               </button>
               <button

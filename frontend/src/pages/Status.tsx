@@ -70,7 +70,7 @@ const StatusPage = (): JSX.Element => {
         className="w-full max-w-md rounded-xl border border-white/[0.06] bg-[#313338] p-6 shadow-2xl"
       >
         <h1 className="text-2xl font-bold text-white">API Connection Lost</h1>
-        <p className="mt-2 text-sm text-discord-muted">
+        <p className="mt-2 text-sm text-wind-muted">
           Windcord could not reach the backend service. Your session is still saved locally and will resume once the API comes back.
         </p>
         <p className="mt-3 text-xs text-[#9ecbff]">We retry automatically every 5 seconds.</p>
@@ -79,7 +79,7 @@ const StatusPage = (): JSX.Element => {
           type="button"
           disabled={checking}
           onClick={() => void checkNow()}
-          className="mt-5 w-full rounded bg-discord-blurple py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
+          className="mt-5 w-full rounded bg-wind-accent py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
         >
           {checking ? "Checking..." : "Retry Now"}
         </button>

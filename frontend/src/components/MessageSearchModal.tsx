@@ -1,10 +1,10 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import emojiMartDataJson from "@emoji-mart/data/sets/15/native.json";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Hash, Search, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronUp, Hash, Search, X } from "lucide-react";
 import { api } from "../lib/api";
 import { resolveUserAvatarUrl } from "../lib/media";
-import type { DMMessage, Message, ServerMember } from "../types";
+import type { DMMessage, Message, ServerMember, User } from "../types";
 
 type SearchScope = "server" | "dm";
 
@@ -24,9 +24,17 @@ type Props = {
   scope: SearchScope;
   targetId: string | null;
   members?: ServerMember[];
+  authors?: User[];
   conversationLabel?: string | null;
   onJumpToMessage: (conversationId: string, messageId: string) => Promise<void> | void;
   onOpenChange?: (open: boolean) => void;
+};
+
+type AuthorOption = {
+  id: string;
+  label: string;
+  displayLabel: string;
+  searchTerms: string[];
 };
 
 type SearchGroup = {
@@ -46,6 +54,11 @@ type EmojiSearchEntry = {
 
 const DEBOUNCE_MS = 220;
 const SEARCH_PAGE_SIZE = 25;
+const SORT_OPTIONS = [
+  { value: "new", label: "Newest" },
+  { value: "old", label: "Oldest" }
+] as const;
+const INLINE_AUTHOR_FILTER_REGEX = /(?:^|\s)from:\s*([a-zA-Z0-9_]*)/i;
 const EMOJI_REGEX = /(?:[\u{1F1E6}-\u{1F1FF}]{1,2}|[#*0-9]\uFE0F?\u20E3|\p{Extended_Pictographic}(?:\uFE0F|\uFE0E)?(?:\p{Emoji_Modifier})?(?:\u200D\p{Extended_Pictographic}(?:\uFE0F|\uFE0E)?(?:\p{Emoji_Modifier})?)*)/gu;
 const emojiMartData = emojiMartDataJson as {
   emojis: Record<string, { id: string; name: string; keywords: string[]; skins: Array<{ native: string }> }>;
@@ -152,7 +165,7 @@ const EmojiInlineImage = ({ emoji, sizeClassName = "h-[1.15em] w-[1.15em]" }: { 
   }
 
   return (
-    <span className={`discord-inline-emoji ${sizeClassName}`}>
+    <span className={`wind-inline-emoji ${sizeClassName}`}>
       <img
         src={urls[urlIndex]}
         alt=""
@@ -203,6 +216,18 @@ const renderEmojiText = (text: string, keyPrefix: string, sizeClassName = "h-[1.
 };
 
 const escapeRegExp = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const stripInlineAuthorFilter = (value: string): string => {
+  const match = value.match(INLINE_AUTHOR_FILTER_REGEX);
+  if (!match) {
+    return value.trim();
+  }
+
+  return value
+    .replace(new RegExp(`(?:^|\\s)from:\\s*${escapeRegExp(match[1] ?? "")}`, "i"), " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+};
 
 const formatSearchTimestamp = (value: string): string => {
   const date = new Date(value);
@@ -264,7 +289,7 @@ const getSearchEndpoint = (scope: SearchScope, targetId: string): string => {
     : `/dms/${targetId}/messages/search`;
 };
 
-const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, onJumpToMessage, onOpenChange }: Props): JSX.Element => {
+const MessageSearchModal = ({ scope, targetId, members = [], authors = [], conversationLabel, onJumpToMessage, onOpenChange }: Props): JSX.Element => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
@@ -273,6 +298,10 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
   const [pageInput, setPageInput] = useState("1");
   const [totalResults, setTotalResults] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [sortOrder, setSortOrder] = useState<"new" | "old">("new");
+  const [authorFilterId, setAuthorFilterId] = useState("");
+  const [sortMenuOpen, setSortMenuOpen] = useState(false);
+  const [authorSuggestionIndex, setAuthorSuggestionIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [error, setError] = useState<string | null>(null);
@@ -280,6 +309,8 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
   const [activeJumpSlot, setActiveJumpSlot] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const pageJumpInputRef = useRef<HTMLInputElement>(null);
+  const sortMenuRef = useRef<HTMLDivElement>(null);
+  const sortTriggerRef = useRef<HTMLButtonElement>(null);
 
   const memberNickColorByUserId = useMemo(() => {
     const next = new Map<string, string>();
@@ -291,17 +322,106 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
     return next;
   }, [members]);
 
+  const authorOptions = useMemo<AuthorOption[]>(() => {
+    const byId = new Map<string, AuthorOption>();
+
+    for (const member of members) {
+      const displayName = member.user.nickname?.trim() || member.user.username;
+      const username = member.user.username;
+      byId.set(member.userId, {
+        id: member.userId,
+        label: displayName,
+        displayLabel: displayName === username ? displayName : `${displayName} (@${username})`,
+        searchTerms: Array.from(new Set([displayName.toLowerCase(), username.toLowerCase()]))
+      });
+    }
+
+    for (const author of authors) {
+      if (byId.has(author.id)) {
+        continue;
+      }
+
+      const displayName = author.nickname?.trim() || author.username;
+      const username = author.username;
+      byId.set(author.id, {
+        id: author.id,
+        label: displayName,
+        displayLabel: displayName === username ? displayName : `${displayName} (@${username})`,
+        searchTerms: Array.from(new Set([displayName.toLowerCase(), username.toLowerCase()]))
+      });
+    }
+
+    return Array.from(byId.values()).sort((left, right) => left.label.localeCompare(right.label));
+  }, [authors, members]);
+
+  const selectedAuthor = useMemo(
+    () => authorOptions.find((option) => option.id === authorFilterId) ?? null,
+    [authorFilterId, authorOptions]
+  );
+
+  const inlineAuthorToken = useMemo(() => {
+    const match = query.match(INLINE_AUTHOR_FILTER_REGEX);
+    return match?.[1] ?? "";
+  }, [query]);
+
+  const authorSuggestions = useMemo(() => {
+    if (selectedAuthor) {
+      return [];
+    }
+
+    const normalizedToken = inlineAuthorToken.trim().toLowerCase();
+    if (!normalizedToken) {
+      return [];
+    }
+
+    return authorOptions
+      .filter((option) => option.searchTerms.some((term) => term.startsWith(normalizedToken)))
+      .slice(0, 8);
+  }, [authorOptions, inlineAuthorToken, selectedAuthor]);
+
+  const showAuthorSuggestions = inlineAuthorToken.trim().length > 0 && !selectedAuthor;
+
+  const selectAuthorSuggestion = useCallback((option: AuthorOption): void => {
+    setAuthorFilterId(option.id);
+    setAuthorSuggestionIndex(0);
+    setQuery((current) => stripInlineAuthorFilter(current));
+    setPage(1);
+    window.requestAnimationFrame(() => inputRef.current?.focus());
+  }, []);
+
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      setDebouncedQuery(query.trim());
+      setDebouncedQuery(stripInlineAuthorFilter(query));
     }, DEBOUNCE_MS);
 
     return () => window.clearTimeout(timer);
   }, [query]);
 
   useEffect(() => {
+    setAuthorSuggestionIndex(0);
+  }, [inlineAuthorToken, authorSuggestions.length]);
+
+  useEffect(() => {
     onOpenChange?.(open);
   }, [onOpenChange, open]);
+
+  useEffect(() => {
+    if (!sortMenuOpen) {
+      return;
+    }
+
+    const handler = (event: MouseEvent): void => {
+      if (
+        sortMenuRef.current && !sortMenuRef.current.contains(event.target as Node) &&
+        sortTriggerRef.current && !sortTriggerRef.current.contains(event.target as Node)
+      ) {
+        setSortMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [sortMenuOpen]);
 
   useEffect(() => {
     setPageInput(String(page));
@@ -324,6 +444,9 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
     setPage(1);
     setTotalResults(0);
     setTotalPages(1);
+    setSortOrder("new");
+    setAuthorFilterId("");
+    setSortMenuOpen(false);
     setResults([]);
     setSelectedIndex(-1);
     setError(null);
@@ -331,7 +454,13 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
   }, [scope, targetId]);
 
   useEffect(() => {
-    if (!targetId || !debouncedQuery) {
+    if (!open) {
+      setSortMenuOpen(false);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (!targetId || !open) {
       setResults([]);
       setTotalResults(0);
       setTotalPages(1);
@@ -349,7 +478,13 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
       setSelectedIndex(-1);
       try {
         const { data } = await api.get(getSearchEndpoint(scope, targetId), {
-          params: { q: debouncedQuery, page, pageSize: SEARCH_PAGE_SIZE }
+          params: {
+            ...(debouncedQuery ? { q: debouncedQuery } : {}),
+            ...(authorFilterId ? { authorId: authorFilterId } : {}),
+            sort: sortOrder,
+            page,
+            pageSize: SEARCH_PAGE_SIZE
+          }
         });
         if (!cancelled) {
           setResults((data.results ?? []) as SearchResult[]);
@@ -375,7 +510,7 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
     return () => {
       cancelled = true;
     };
-  }, [debouncedQuery, page, scope, targetId]);
+  }, [authorFilterId, debouncedQuery, open, page, scope, sortOrder, targetId]);
 
   const groupedResults = useMemo<SearchGroup[]>(() => {
     const groups = new Map<string, SearchGroup>();
@@ -448,6 +583,29 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
   }, [onJumpToMessage]);
 
   const handleKeyDown = useCallback((event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (showAuthorSuggestions && authorSuggestions.length > 0) {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        setAuthorSuggestionIndex((prev) => Math.min(prev + 1, authorSuggestions.length - 1));
+        return;
+      }
+
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        setAuthorSuggestionIndex((prev) => Math.max(prev - 1, 0));
+        return;
+      }
+
+      if (event.key === "Enter" || event.key === "Tab") {
+        event.preventDefault();
+        const nextAuthor = authorSuggestions[authorSuggestionIndex] ?? authorSuggestions[0];
+        if (nextAuthor) {
+          selectAuthorSuggestion(nextAuthor);
+        }
+        return;
+      }
+    }
+
     if (event.key === "Escape") {
       setSelectedIndex(-1);
       return;
@@ -474,7 +632,7 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
       event.preventDefault();
       void handleResultClick(results[selectedIndex]);
     }
-  }, [handleResultClick, results, selectedIndex]);
+  }, [authorSuggestionIndex, authorSuggestions, handleResultClick, results, selectAuthorSuggestion, selectedIndex, showAuthorSuggestions]);
 
   const clearSearch = (): void => {
     setQuery("");
@@ -483,6 +641,10 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
     setPageInput("1");
     setTotalResults(0);
     setTotalPages(1);
+    setSortOrder("new");
+    setAuthorFilterId("");
+    setAuthorSuggestionIndex(0);
+    setSortMenuOpen(false);
     setResults([]);
     setSelectedIndex(-1);
     setError(null);
@@ -511,38 +673,75 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
 
   const paginationButtonClass = "shrink-0 flex h-8 min-w-[2rem] items-center justify-center rounded-full px-2 text-xs font-semibold transition";
   const pageNavButtonClass = "shrink-0 inline-flex h-8 items-center gap-1 rounded-full px-2.5 text-[11px] font-semibold transition";
+  const currentSortLabel = SORT_OPTIONS.find((option) => option.value === sortOrder)?.label ?? "Newest";
+  const totalLabel = `${totalResults.toLocaleString()} message${totalResults === 1 ? "" : "s"}`;
+  const hasActiveFilters = Boolean(debouncedQuery || selectedAuthor || sortOrder === "old");
 
   return (
     <div>
-      <div
-        className="flex items-center gap-2 rounded-xl border border-white/[0.05] bg-black/20 px-3 py-2 backdrop-blur-xl transition focus-within:border-white/[0.08] focus-within:bg-black/30"
-        style={{ boxShadow: "var(--wc-search-shell-shadow)" }}
-      >
-        <Search size={14} className="shrink-0 text-discord-muted" />
-        <input
-          ref={inputRef}
-          type="text"
-          value={query}
-          onFocus={() => setOpen(true)}
-          onKeyDown={handleKeyDown}
-          onChange={(event) => {
-            setQuery(event.target.value);
-            setPage(1);
-            setOpen(true);
-          }}
-          placeholder="Search"
-          className="min-w-0 flex-1 bg-transparent text-sm text-white placeholder-discord-muted outline-none"
-          aria-label={scope === "server" ? "Search server messages" : "Search direct messages"}
-        />
-        {open ? (
-          <button
-            type="button"
-            onClick={closePanel}
-            className="rounded-md p-1 text-discord-muted transition hover:bg-white/[0.06] hover:text-white"
-            aria-label="Close search results"
-          >
-            <X size={14} />
-          </button>
+      <div className="relative">
+        <div
+          className="flex items-center gap-2 rounded-xl border border-white/[0.05] bg-black/20 px-3 py-2 backdrop-blur-xl transition focus-within:border-white/[0.08] focus-within:bg-black/30"
+          style={{ boxShadow: "var(--wc-search-shell-shadow)" }}
+        >
+          <Search size={14} className="shrink-0 text-wind-muted" />
+          <input
+            ref={inputRef}
+            type="text"
+            value={query}
+            onFocus={() => setOpen(true)}
+            onKeyDown={handleKeyDown}
+            onChange={(event) => {
+              const nextValue = event.target.value;
+              if (INLINE_AUTHOR_FILTER_REGEX.test(nextValue)) {
+                setAuthorFilterId("");
+              }
+              setQuery(nextValue);
+              setPage(1);
+              setOpen(true);
+            }}
+            placeholder="Search messages or type from:username"
+            className="min-w-0 flex-1 bg-transparent text-sm text-white placeholder-wind-muted outline-none"
+            aria-label={scope === "server" ? "Search server messages" : "Search direct messages"}
+          />
+          {open ? (
+            <button
+              type="button"
+              onClick={closePanel}
+              className="rounded-md p-1 text-wind-muted transition hover:bg-white/[0.06] hover:text-white"
+              aria-label="Close search results"
+            >
+              <X size={14} />
+            </button>
+          ) : null}
+        </div>
+
+        {showAuthorSuggestions ? (
+          <div className="wc-popover absolute left-0 right-0 top-[calc(100%+0.45rem)] z-40 overflow-hidden rounded-2xl py-1.5">
+            <p className="px-3 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wider text-wind-muted">Choose Sender</p>
+            {authorSuggestions.length > 0 ? (
+              authorSuggestions.map((option, index) => {
+                const active = index === authorSuggestionIndex;
+                return (
+                  <button
+                    key={option.id}
+                    type="button"
+                    className={`flex w-full items-center gap-3 px-3 py-2 text-sm transition hover:bg-white/[0.06] ${active ? "bg-white/[0.06] text-white" : "text-wind-text"}`}
+                    onMouseEnter={() => setAuthorSuggestionIndex(index)}
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+                      selectAuthorSuggestion(option);
+                    }}
+                  >
+                    <span className="flex-1 text-left">{option.displayLabel}</span>
+                    {active ? <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white/40" /> : null}
+                  </button>
+                );
+              })
+            ) : (
+              <div className="px-3 py-2 text-sm text-wind-muted">No matching users</div>
+            )}
+          </div>
         ) : null}
       </div>
 
@@ -558,36 +757,114 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
             role="dialog"
             aria-label={scope === "server" ? "Server search results" : "Direct message search results"}
           >
-            <div className="flex items-center justify-between gap-2 border-b border-white/[0.04] px-4 py-3">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-discord-muted">Search Results</p>
-                <p className="mt-1 text-xs text-discord-muted">
-                  {debouncedQuery
-                    ? `${totalResults} result${totalResults === 1 ? "" : "s"}`
-                    : (scope === "server" ? "Search across this server" : "Search this conversation")}
-                </p>
+            <div className="border-b border-white/[0.04] px-4 py-3">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-wind-muted">Search Results</p>
+                  <p className="mt-1 text-xs text-wind-muted">
+                    {open
+                      ? debouncedQuery || selectedAuthor
+                        ? `${totalLabel} found`
+                        : `${totalLabel} total`
+                      : (scope === "server" ? "Search across this server" : "Search this conversation")}
+                  </p>
+                </div>
+                {loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-[var(--wc-accent)]" /> : null}
               </div>
-              {loading ? <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-[var(--wc-accent)]" /> : null}
+
+              <div className="mt-3 flex flex-wrap items-center gap-2">
+                <div className="relative">
+                  <button
+                    ref={sortTriggerRef}
+                    type="button"
+                    onClick={() => setSortMenuOpen((current) => !current)}
+                    className="flex items-center gap-2 rounded-xl border border-white/[0.04] bg-white/[0.03] px-2.5 py-2 text-xs text-wind-muted transition hover:border-white/[0.06] hover:bg-white/[0.05]"
+                    aria-haspopup="menu"
+                    aria-expanded={sortMenuOpen}
+                    aria-label="Sort search results"
+                  >
+                    <span className="font-semibold uppercase tracking-[0.14em]">Sort</span>
+                    <span className="text-sm text-white">{currentSortLabel}</span>
+                    <ChevronUp size={13} className={`text-wind-muted transition-transform ${sortMenuOpen ? "rotate-180" : "rotate-0"}`} />
+                  </button>
+
+                  {sortMenuOpen ? (
+                    <div
+                      ref={sortMenuRef}
+                      className="wc-popover absolute left-0 top-[calc(100%+0.5rem)] z-20 min-w-[11rem] overflow-hidden rounded-2xl py-1.5"
+                      role="menu"
+                    >
+                      <p className="px-3 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wider text-wind-muted">Sort Order</p>
+                      {SORT_OPTIONS.map((option) => {
+                        const active = option.value === sortOrder;
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            className={`flex w-full items-center gap-3 px-3 py-2 text-sm transition hover:bg-white/[0.06] ${active ? "text-white" : "text-wind-text"}`}
+                            onClick={() => {
+                              setSortOrder(option.value);
+                              setPage(1);
+                              setSortMenuOpen(false);
+                            }}
+                            role="menuitemradio"
+                            aria-checked={active}
+                          >
+                            <span className="flex-1 text-left">{option.label}</span>
+                            {active ? <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-white/40" /> : null}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+                </div>
+
+                {selectedAuthor ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthorFilterId("");
+                      setPage(1);
+                    }}
+                    className="inline-flex items-center gap-1 rounded-full border border-white/[0.05] bg-white/[0.05] px-2.5 py-1 text-[11px] font-semibold text-white transition hover:bg-white/[0.08]"
+                    aria-label={`Clear sender filter for ${selectedAuthor.label}`}
+                  >
+                    <span>From: {selectedAuthor.label}</span>
+                    <X size={12} />
+                  </button>
+                ) : null}
+
+                {sortOrder === "old" ? (
+                  <span className="inline-flex items-center rounded-full border border-white/[0.05] bg-white/[0.04] px-2.5 py-1 text-[11px] font-semibold text-wind-muted">
+                    Oldest first
+                  </span>
+                ) : null}
+              </div>
+
+              {authorOptions.length > 0 ? (
+                <p className="mt-2 text-[11px] text-wind-muted">
+                  Type <span className="font-semibold text-white/90">from: username</span> in the search box, then choose the sender from the list.
+                </p>
+              ) : null}
             </div>
 
-            <div className="discord-scrollbar min-h-0 flex-1 overflow-y-auto p-2.5">
+            <div className="wind-scrollbar min-h-0 flex-1 overflow-y-auto p-2.5">
               {error ? (
                 <div className="rounded-2xl border border-red-500/20 bg-red-500/10 px-3 py-4 text-center text-sm text-red-300" role="alert">
                   {error}
                 </div>
-              ) : !debouncedQuery ? (
-                <div className="rounded-2xl border border-white/[0.04] bg-white/[0.02] px-4 py-5 text-center">
-                  <p className="text-sm font-medium text-white">{scope === "server" ? "Search every channel in this server" : "Search this DM"}</p>
-                  <p className="mt-1 text-xs leading-5 text-discord-muted">
-                    {scope === "server"
-                      ? "Results open directly in their channel, and older hits load enough context to land on the exact message."
-                      : "Results open directly in this conversation, and older hits load enough context to land on the exact message."}
-                  </p>
-                </div>
               ) : !loading && groupedResults.length === 0 ? (
                 <div className="rounded-2xl border border-white/[0.04] bg-white/[0.02] px-4 py-5 text-center">
-                  <p className="text-sm font-medium text-white">No messages found for "{debouncedQuery}"</p>
-                  <p className="mt-1 text-xs leading-5 text-discord-muted">Try a different word, phrase, or channel conversation.</p>
+                  <p className="text-sm font-medium text-white">
+                    {hasActiveFilters ? "No messages matched your search." : "No messages yet."}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-wind-muted">
+                    {hasActiveFilters
+                      ? "Try a different phrase, sender, or sort order."
+                      : (scope === "server"
+                        ? "Messages from this server will appear here as soon as they exist."
+                        : "Messages from this conversation will appear here as soon as they exist.")}
+                  </p>
                 </div>
               ) : (
                 groupedResults.map((group) => {
@@ -598,8 +875,8 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
                         className="sticky top-0 z-10 mb-2 flex items-center gap-2 rounded-xl px-2.5 py-2 backdrop-blur"
                         style={{ backgroundColor: "var(--wc-card-surface-strong)", boxShadow: "inset 0 0 0 1px var(--wc-line-strong)" }}
                       >
-                        {scope === "server" ? <Hash size={13} className="text-discord-muted" /> : null}
-                        <span className="truncate text-[11px] font-semibold uppercase tracking-[0.14em] text-discord-muted">{group.conversationName}</span>
+                        {scope === "server" ? <Hash size={13} className="text-wind-muted" /> : null}
+                        <span className="truncate text-[11px] font-semibold uppercase tracking-[0.14em] text-wind-muted">{group.conversationName}</span>
                       </div>
                       <div className="space-y-1.5">
                         {group.items.map((result, itemIndex) => {
@@ -637,13 +914,13 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
                                     >
                                       {authorName}
                                     </span>
-                                    <span className="shrink-0 text-[11px] text-discord-muted">{formatSearchTimestamp(result.message.createdAt)}</span>
+                                    <span className="shrink-0 text-[11px] text-wind-muted">{formatSearchTimestamp(result.message.createdAt)}</span>
                                   </div>
-                                  <p className="mt-1 line-clamp-3 whitespace-pre-wrap break-words text-[13px] leading-5 text-discord-text">
+                                  <p className="mt-1 line-clamp-3 whitespace-pre-wrap break-words text-[13px] leading-5 text-wind-text">
                                     {highlightPreview(previewText, debouncedQuery, `preview-${result.message.id}`)}
                                   </p>
                                   {result.message.replyTo?.content ? (
-                                    <p className="mt-2 line-clamp-1 text-[11px] text-discord-muted">
+                                    <p className="mt-2 line-clamp-1 text-[11px] text-wind-muted">
                                       Replying to {result.message.replyTo.author.nickname || result.message.replyTo.author.username}: {renderEmojiText(replaceCompletedEmojiShortcodes(result.message.replyTo.content), `reply-${result.message.id}`, "h-[1em] w-[1em]")}
                                     </p>
                                   ) : null}
@@ -660,14 +937,14 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
               )}
             </div>
 
-            {debouncedQuery && totalPages > 1 ? (
+            {totalPages > 1 ? (
               <div className="border-t border-white/[0.04] px-3 py-2.5">
                 <div className="flex items-center justify-between gap-1.5">
                   <button
                     type="button"
                     onClick={() => setPage((current) => Math.max(1, current - 1))}
                     disabled={page <= 1 || loading}
-                    className={`${pageNavButtonClass} text-discord-text hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-40`}
+                    className={`${pageNavButtonClass} text-wind-text hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-40`}
                   >
                     <ChevronLeft size={13} className="shrink-0" />
                     <span>Back</span>
@@ -709,7 +986,7 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
                               setPageInput(String(page));
                               setActiveJumpSlot(item.key);
                             }}
-                            className={`${paginationButtonClass} text-discord-muted hover:bg-white/[0.04] hover:text-white`}
+                            className={`${paginationButtonClass} text-wind-muted hover:bg-white/[0.04] hover:text-white`}
                             aria-label="Jump to a specific page"
                           >
                             ...
@@ -727,7 +1004,7 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
                           className={`${paginationButtonClass} ${
                             isActive
                               ? "bg-[var(--wc-accent)] text-white shadow-[0_10px_20px_rgba(0,0,0,0.18)]"
-                              : "text-discord-text hover:bg-white/[0.06]"
+                              : "text-wind-text hover:bg-white/[0.06]"
                           } disabled:cursor-not-allowed disabled:opacity-40`}
                           aria-current={isActive ? "page" : undefined}
                           aria-label={`Page ${item.value}`}
@@ -741,7 +1018,7 @@ const MessageSearchModal = ({ scope, targetId, members = [], conversationLabel, 
                     type="button"
                     onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
                     disabled={page >= totalPages || loading}
-                    className={`${pageNavButtonClass} text-discord-text hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-40`}
+                    className={`${pageNavButtonClass} text-wind-text hover:bg-white/[0.06] disabled:cursor-not-allowed disabled:opacity-40`}
                   >
                     <span>Next</span>
                     <ChevronRight size={13} className="shrink-0" />

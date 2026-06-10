@@ -125,7 +125,7 @@ const NickColorModal = ({ open, serverId, currentColor, onClose, onApplied }: Pr
               <h2 className="text-base font-semibold text-white">Nickname Color</h2>
               <button
                 type="button"
-                className="rounded p-1 text-discord-muted transition hover:bg-white/[0.06] hover:text-white"
+                className="rounded p-1 text-wind-muted transition hover:bg-white/[0.06] hover:text-white"
                 onClick={onClose}
               >
                 <X size={18} />
@@ -140,7 +140,7 @@ const NickColorModal = ({ open, serverId, currentColor, onClose, onApplied }: Pr
               </div>
 
               {/* Presets grid */}
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-discord-muted">Preset Colors</p>
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-wind-muted">Preset Colors</p>
               <div className="mb-4 grid grid-cols-5 gap-2">
                 {PRESET_COLORS.map((p) => (
                   <button
@@ -154,7 +154,7 @@ const NickColorModal = ({ open, serverId, currentColor, onClose, onApplied }: Pr
               </div>
 
               {/* Custom */}
-              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-discord-muted">Custom Color</p>
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-wind-muted">Custom Color</p>
               <div className="mb-1 flex gap-2">
                 <input
                   ref={colorInputRef}
@@ -170,7 +170,7 @@ const NickColorModal = ({ open, serverId, currentColor, onClose, onApplied }: Pr
                     type="button"
                     onClick={() => void handleEyeDropper()}
                     title="Pick color from screen"
-                    className="flex h-9 items-center gap-1.5 rounded-xl border border-white/[0.06] px-3 text-xs text-discord-muted hover:text-white"
+                    className="flex h-9 items-center gap-1.5 rounded-xl border border-white/[0.06] px-3 text-xs text-wind-muted hover:text-white"
                     style={{ backgroundColor: "rgba(0, 0, 0, 0.22)" }}
                   >
                     <span>💉</span> Eyedrop
@@ -194,14 +194,14 @@ const NickColorModal = ({ open, serverId, currentColor, onClose, onApplied }: Pr
                   type="button"
                   onClick={() => void handleReset()}
                   disabled={saving || currentColor === null}
-                  className="rounded-xl px-3 py-1.5 text-sm text-discord-muted transition hover:bg-white/[0.05] hover:text-white disabled:opacity-40"
+                  className="rounded-xl px-3 py-1.5 text-sm text-wind-muted transition hover:bg-white/[0.05] hover:text-white disabled:opacity-40"
                 >
                   Reset
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="rounded-xl px-3 py-1.5 text-sm text-discord-muted transition hover:bg-white/[0.05] hover:text-white"
+                  className="rounded-xl px-3 py-1.5 text-sm text-wind-muted transition hover:bg-white/[0.05] hover:text-white"
                 >
                   Cancel
                 </button>

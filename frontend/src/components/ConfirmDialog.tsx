@@ -35,10 +35,10 @@ const ConfirmDialog = ({ open, title, message, confirmLabel = "Confirm", danger 
             onClick={(e) => e.stopPropagation()}
           >
             {title ? <h3 className="mb-2 text-base font-bold text-white">{title}</h3> : null}
-            <p className="text-sm text-discord-muted">{message}</p>
+            <p className="text-sm text-wind-muted">{message}</p>
             <div className="mt-5 flex justify-end gap-2">
               <button
-                className="rounded-xl px-4 py-1.5 text-sm text-discord-muted transition hover:bg-white/[0.05] hover:text-white"
+                className="rounded-xl px-4 py-1.5 text-sm text-wind-muted transition hover:bg-white/[0.05] hover:text-white"
                 onClick={onCancel}
               >
                 Cancel

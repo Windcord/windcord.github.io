@@ -237,13 +237,13 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
             >
               {/* Sidebar */}
               <div className="w-48 shrink-0 border-r border-white/[0.04] p-3.5" style={{ background: "var(--wc-settings-sidebar-bg)" }}>
-                <p className="mb-1 px-2 pt-1 text-[11px] font-semibold uppercase tracking-wider text-discord-muted">User Settings</p>
+                <p className="mb-1 px-2 pt-1 text-[11px] font-semibold uppercase tracking-wider text-wind-muted">User Settings</p>
                 {NAV.map((n) => (
                   <button
                     key={n.id}
                     type="button"
                     onClick={() => setTab(n.id)}
-                    className={`mt-1 w-full rounded-xl border px-2.5 py-2 text-left text-sm font-medium transition ${tab === n.id ? "border-white/[0.04] bg-white/[0.06] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]" : "border-transparent text-discord-muted hover:border-white/[0.03] hover:bg-white/[0.04] hover:text-white"}`}
+                    className={`mt-1 w-full rounded-xl border px-2.5 py-2 text-left text-sm font-medium transition ${tab === n.id ? "border-white/[0.04] bg-white/[0.06] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]" : "border-transparent text-wind-muted hover:border-white/[0.03] hover:bg-white/[0.04] hover:text-white"}`}
                   >
                     {n.label}
                   </button>
@@ -251,7 +251,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
               </div>
 
               {/* Content */}
-              <form onSubmit={onSubmit} className="discord-scrollbar flex min-w-0 flex-1 flex-col overflow-y-auto bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))] p-6">
+              <form onSubmit={onSubmit} className="wind-scrollbar flex min-w-0 flex-1 flex-col overflow-y-auto bg-[linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01))] p-6">
 
                 {/* MY PROFILE */}
                 {tab === "profile" && (
@@ -307,7 +307,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                             <button
                               type="button"
                               onClick={clearAvatarSelection}
-                              className="text-[10px] text-discord-muted hover:text-[#ed4245] transition-colors"
+                              className="text-[10px] text-wind-muted hover:text-[#ed4245] transition-colors"
                             >
                               Remove
                             </button>
@@ -316,7 +316,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                             <button
                               type="button"
                               onClick={() => setRemoveAvatar(false)}
-                              className="text-[10px] text-discord-muted hover:text-white transition-colors"
+                              className="text-[10px] text-wind-muted hover:text-white transition-colors"
                             >
                               Undo
                             </button>
@@ -324,18 +324,18 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                         </div>
                         <div>
                           <p className="font-semibold text-white">{user.nickname || user.username}</p>
-                          <p className="text-xs text-discord-muted">@{user.username}</p>
+                          <p className="text-xs text-wind-muted">@{user.username}</p>
                         </div>
                         {(bannerImage !== null || (user.bannerImageUrl && !removeBannerImage)) ? (
-                          <button type="button" onClick={clearBannerImage} className="ml-auto self-start pt-1 text-[10px] text-discord-muted transition-colors hover:text-[#ed4245]">Remove banner</button>
+                          <button type="button" onClick={clearBannerImage} className="ml-auto self-start pt-1 text-[10px] text-wind-muted transition-colors hover:text-[#ed4245]">Remove banner</button>
                         ) : removeBannerImage ? (
-                          <button type="button" onClick={() => setRemoveBannerImage(false)} className="ml-auto self-start pt-1 text-[10px] text-discord-muted transition-colors hover:text-white">Undo</button>
+                          <button type="button" onClick={() => setRemoveBannerImage(false)} className="ml-auto self-start pt-1 text-[10px] text-wind-muted transition-colors hover:text-white">Undo</button>
                         ) : null}
                       </div>
                     </div>
 
                     {/* Banner color */}
-                    <label className="mb-3 block text-xs text-discord-muted">
+                    <label className="mb-3 block text-xs text-wind-muted">
                       Banner Color
                       <div className="mt-1 flex items-center gap-2">
                         <div className="relative flex items-center">
@@ -358,7 +358,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                           <button
                             type="button"
                             onClick={() => void pickColorWithEyeDropper("banner")}
-                            className="wc-input-surface flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs text-discord-muted hover:text-white"
+                            className="wc-input-surface flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs text-wind-muted hover:text-white"
                             title="Pick color from screen"
                           >
                             <Pipette size={13} /> Eyedropper
@@ -368,9 +368,9 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                     </label>
 
                     {/* Profile accent color */}
-                    <label className="mb-3 block text-xs text-discord-muted">
+                    <label className="mb-3 block text-xs text-wind-muted">
                       Profile Accent Color
-                      <span className="ml-1.5 text-[10px] text-discord-muted/60">— colors the profile card background</span>
+                      <span className="ml-1.5 text-[10px] text-wind-muted/60">— colors the profile card background</span>
                       <div className="mt-1 flex items-center gap-2">
                         <input
                           type="color"
@@ -390,7 +390,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                           <button
                             type="button"
                             onClick={() => void pickColorWithEyeDropper("accent")}
-                            className="wc-input-surface flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs text-discord-muted hover:text-white"
+                            className="wc-input-surface flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs text-wind-muted hover:text-white"
                             title="Pick color from screen"
                           >
                             <Pipette size={13} /> Eyedropper
@@ -400,7 +400,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                           <button
                             type="button"
                             onClick={() => setAccentColor("")}
-                            className="text-xs text-discord-muted hover:text-[#ed4245]"
+                            className="text-xs text-wind-muted hover:text-[#ed4245]"
                           >
                             Remove
                           </button>
@@ -408,7 +408,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                       </div>
                     </label>
 
-                    <label className="mb-3 block text-xs text-discord-muted">
+                    <label className="mb-3 block text-xs text-wind-muted">
                       Nickname
                       <input
                         className="wc-input-surface mt-1 w-full rounded-xl px-3 py-2 text-sm text-white"
@@ -418,7 +418,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                       />
                     </label>
 
-                    <label className="mb-3 block text-xs text-discord-muted">
+                    <label className="mb-3 block text-xs text-wind-muted">
                       Custom Status
                       <input
                         className="wc-input-surface mt-1 w-full rounded-xl px-3 py-2 text-sm text-white"
@@ -428,7 +428,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                       />
                     </label>
 
-                    <label className="mb-3 block text-xs text-discord-muted">
+                    <label className="mb-3 block text-xs text-wind-muted">
                       About Me
                       <textarea
                         className="wc-input-surface mt-1 w-full rounded-xl px-3 py-2 text-sm text-white"
@@ -452,9 +452,9 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <h3 className="text-sm font-semibold text-white">Theme</h3>
-                          <p className="mt-1 text-xs leading-5 text-discord-muted">Choose a curated Windcord look. Theme changes apply instantly.</p>
+                          <p className="mt-1 text-xs leading-5 text-wind-muted">Choose a curated Windcord look. Theme changes apply instantly.</p>
                         </div>
-                        <span className="rounded-full border border-white/[0.06] bg-white/[0.04] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-discord-muted">Live</span>
+                        <span className="rounded-full border border-white/[0.06] bg-white/[0.04] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-wind-muted">Live</span>
                       </div>
 
                       <div className="mt-4 grid gap-3 md:grid-cols-3">
@@ -480,7 +480,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                                 <p className="text-sm font-semibold text-white">{option.label}</p>
                                 {active ? <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#dce6ff]">Active</span> : null}
                               </div>
-                              <p className="mt-1 text-xs leading-5 text-discord-muted">{option.description}</p>
+                              <p className="mt-1 text-xs leading-5 text-wind-muted">{option.description}</p>
                             </button>
                           );
                         })}
@@ -488,14 +488,14 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                     </div>
 
                     <div className="mb-3 rounded-2xl border border-white/[0.06] bg-black/20 p-4 backdrop-blur-sm">
-                      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-discord-muted">Notification Sound</span>
+                      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-wind-muted">Notification Sound</span>
                       <div className="mt-3 flex gap-1 rounded-2xl border border-white/[0.04] bg-black/20 p-1.5">
                         {(["default", "alt"] as const).map((opt) => (
                           <button
                             key={opt}
                             type="button"
                             onClick={() => { setNotifSound(opt); }}
-                            className={`flex-1 rounded-xl py-2 text-xs font-medium transition ${notifSound === opt ? "bg-[linear-gradient(180deg,var(--wc-active-top),var(--wc-active-bottom))] text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)]" : "text-discord-muted hover:bg-white/[0.05] hover:text-white"}`}
+                            className={`flex-1 rounded-xl py-2 text-xs font-medium transition ${notifSound === opt ? "bg-[linear-gradient(180deg,var(--wc-active-top),var(--wc-active-bottom))] text-white shadow-[0_10px_24px_rgba(0,0,0,0.18)]" : "text-wind-muted hover:bg-white/[0.05] hover:text-white"}`}
                           >
                             {opt === "default" ? "Default" : "Alternate"}
                           </button>
@@ -510,7 +510,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                   <>
                     <h2 className="mb-4 text-lg font-semibold">Account</h2>
 
-                    <label className="mb-3 block text-xs text-discord-muted">
+                    <label className="mb-3 block text-xs text-wind-muted">
                       Username
                       <input
                         className="wc-input-surface mt-1 w-full rounded-xl px-3 py-2 text-sm text-white"
@@ -522,7 +522,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                       <span className="mt-1 block text-[11px]">Letters and numbers only, no spaces.</span>
                     </label>
 
-                    <label className="mb-3 block text-xs text-discord-muted">
+                    <label className="mb-3 block text-xs text-wind-muted">
                       Status
                       <select
                         className="wc-input-surface mt-1 w-full rounded-xl px-3 py-2 text-sm text-white"
@@ -546,7 +546,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
 
                     <div className="mb-4 rounded-2xl border border-white/[0.06] bg-black/20 p-4 backdrop-blur-sm">
                       <h3 className="text-sm font-semibold text-white">Recovery Key</h3>
-                      <p className="mt-1 text-xs leading-5 text-discord-muted">
+                      <p className="mt-1 text-xs leading-5 text-wind-muted">
                         Save a recovery key somewhere safe. You can use it to reset your password if you get locked out.
                       </p>
                       {recoveryCode ? (
@@ -576,7 +576,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
 
                     <div className="rounded-2xl border border-[#ed4245]/30 bg-[rgba(52,20,24,0.44)] p-4 backdrop-blur-sm">
                       <h3 className="text-sm font-semibold text-[#ed4245]">Danger Zone</h3>
-                      <p className="mt-1 text-xs leading-5 text-discord-muted">Permanently delete your account and all your data.</p>
+                      <p className="mt-1 text-xs leading-5 text-wind-muted">Permanently delete your account and all your data.</p>
                       <div className="mt-3">
                         {!confirmDelete ? (
                           <button
@@ -597,7 +597,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                             >
                               {deleting ? "Deleting..." : "Confirm Delete"}
                             </button>
-                            <button type="button" className="text-xs text-discord-muted hover:text-white" onClick={() => setConfirmDelete(false)}>Cancel</button>
+                            <button type="button" className="text-xs text-wind-muted hover:text-white" onClick={() => setConfirmDelete(false)}>Cancel</button>
                           </div>
                         )}
                       </div>
@@ -608,7 +608,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                 {/* Footer buttons */}
                 <div className="mt-auto flex items-center justify-end gap-2 pt-6">
                   {saved ? <span className="text-xs text-[#23a55a]">Saved</span> : null}
-                  <button type="button" className="rounded-xl px-3 py-1.5 text-sm text-discord-muted hover:bg-white/[0.04] hover:text-white" onClick={onClose}>
+                  <button type="button" className="rounded-xl px-3 py-1.5 text-sm text-wind-muted hover:bg-white/[0.04] hover:text-white" onClick={onClose}>
                     Cancel
                   </button>
                   <button type="submit" className="rounded-xl bg-[linear-gradient(180deg,var(--wc-active-top),var(--wc-active-bottom))] px-3 py-1.5 text-sm font-semibold text-white hover:brightness-110">

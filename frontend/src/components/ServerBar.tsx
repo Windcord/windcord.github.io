@@ -1,6 +1,6 @@
 import { Plus, Compass, LogOut } from "lucide-react";
 import { useState } from "react";
-import { resolveMediaUrl } from "../lib/media";
+import { resolveMediaUrl, resolveUserAvatarUrl } from "../lib/media";
 import type { DMChannel, Server, User } from "../types";
 
 const DEFAULT_AVATAR_URL = `${import.meta.env.BASE_URL}default-avatar.svg`;
@@ -54,6 +54,10 @@ const ServerBar = ({
   onLogout
 }: Props): JSX.Element => {
   const unreadDMCount = Object.values(unreadDMs).reduce((acc, count) => acc + count, 0);
+  const unreadDM = dms.find((dm) => (unreadDMs[dm.id] ?? 0) > 0) ?? null;
+  const unreadDMUser = unreadDM?.participants.find((participant) => participant.id !== me?.id) ?? unreadDM?.participants[0] ?? null;
+  const unreadDMLabel = unreadDMUser?.nickname?.trim() || unreadDMUser?.username || "Direct Messages";
+  const showUnreadDMShortcut = unreadDMCount > 0 && unreadDM !== null && unreadDMUser !== null;
   const [hoverTooltip, setHoverTooltip] = useState<HoverTooltip | null>(null);
 
   const setTooltipFromElement = (
@@ -74,24 +78,50 @@ const ServerBar = ({
 
   return (
     <aside className="wc-rail flex h-full w-[76px] flex-col items-center gap-2 py-3">
-      <button
-        onClick={onSelectHome}
-        className={`wc-rail-button relative grid h-12 w-12 place-items-center text-white transition hover:rounded-2xl ${
-          homeActive ? "wc-rail-button--active rounded-2xl" : "rounded-[20px]"
-        }`}
-        aria-label="Home"
-      >
-        <img src={HOME_ICON_URL} alt="Home" className="h-7 w-7 object-contain" />
-        {unreadDMCount > 0 ? (
-          <span className="absolute -right-1 -top-1 rounded-full bg-[#ed4245] px-1.5 text-[10px] font-semibold text-white">
-            {Math.min(unreadDMCount, 99)}
-          </span>
-        ) : null}
-      </button>
+      <div className="flex w-full flex-col items-center">
+        <button
+          onClick={onSelectHome}
+          className={`wc-rail-button relative grid h-12 w-12 place-items-center text-white transition hover:rounded-2xl ${
+            homeActive ? "wc-rail-button--active rounded-2xl" : "rounded-[20px]"
+          }`}
+          aria-label="Home"
+        >
+          <img src={HOME_ICON_URL} alt="Home" className="h-7 w-7 object-contain" />
+          {unreadDMCount > 0 && !showUnreadDMShortcut ? (
+            <span className="absolute -right-1 -top-1 rounded-full bg-[#ed4245] px-1.5 text-[10px] font-semibold text-white">
+              {Math.min(unreadDMCount, 99)}
+            </span>
+          ) : null}
+        </button>
+
+        <div
+          className={`w-full overflow-hidden transition-[max-height,opacity,margin] duration-300 ease-out ${
+            showUnreadDMShortcut ? "mt-2 max-h-16 opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
+          <div className={`w-full transition-transform duration-300 ease-out ${showUnreadDMShortcut ? "translate-y-0" : "-translate-y-3"}`}>
+            {unreadDM && unreadDMUser ? (
+              <div className="relative flex w-full justify-center">
+                <button
+                  onClick={() => onSelectDM(unreadDM.id)}
+                  className="wc-rail-button relative flex h-12 w-12 items-center justify-center overflow-hidden rounded-[20px] text-white transition hover:rounded-2xl"
+                  aria-label={`Open unread DM from ${unreadDMLabel}`}
+                  title={unreadDMLabel}
+                >
+                  <img src={resolveUserAvatarUrl(unreadDMUser)} alt={unreadDMLabel} className="h-12 w-12 rounded-full object-cover" />
+                </button>
+                <span className="pointer-events-none absolute bottom-0.5 right-1.5 z-20 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full border-2 border-[#1e1f22] bg-[#ed4245] px-1 text-[10px] font-bold leading-none text-white">
+                  {Math.min(unreadDMCount, 99)}
+                </span>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </div>
 
       <div className="wc-rail-divider h-px w-9" />
 
-      <div className="discord-scrollbar flex w-full flex-1 flex-col items-center gap-2 overflow-y-auto">
+      <div className="wind-scrollbar flex w-full flex-1 flex-col items-center gap-2 overflow-y-auto">
         {servers.map((server) => {
           const active = server.id === activeServerId;
           const activeInServerView = active && !homeActive;
@@ -179,14 +209,14 @@ const ServerBar = ({
         <Plus size={20} />
       </button>
       <button
-        className="wc-rail-button grid h-12 w-12 place-items-center rounded-[20px] text-discord-muted transition hover:rounded-2xl hover:text-white"
+        className="wc-rail-button grid h-12 w-12 place-items-center rounded-[20px] text-wind-muted transition hover:rounded-2xl hover:text-white"
         aria-label="Join a Server"
         onClick={onJoinByInvite}
       >
         <Compass size={20} />
       </button>
       <button
-        className="wc-rail-button grid h-12 w-12 place-items-center rounded-[20px] text-discord-muted transition hover:rounded-2xl hover:text-red-300"
+        className="wc-rail-button grid h-12 w-12 place-items-center rounded-[20px] text-wind-muted transition hover:rounded-2xl hover:text-red-300"
         aria-label="Logout"
         onClick={onLogout}
       >

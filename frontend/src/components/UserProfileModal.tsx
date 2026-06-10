@@ -116,31 +116,31 @@ const UserProfileModal = ({ user, open, serverName, serverMemberSince, me, frien
             <div className="mb-2 flex items-center gap-2">
               <h3 className="text-xl font-bold text-white">{displayName}</h3>
             </div>
-            <p className="text-xs text-discord-muted">@{profileUser.username}</p>
-            <p className="text-xs text-discord-muted">{profileUser.customStatus?.trim() || formatStatusLabel(profileUser.status)}</p>
+            <p className="text-xs text-wind-muted">@{profileUser.username}</p>
+            <p className="text-xs text-wind-muted">{profileUser.customStatus?.trim() || formatStatusLabel(profileUser.status)}</p>
 
             <div className={`mt-4 rounded-2xl border border-white/[0.05] p-3 ${accentBg ? "bg-black/20" : "bg-black/20 backdrop-blur-sm"}`}>
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-discord-muted">About Me</p>
-              <p className="mt-1 whitespace-pre-wrap text-sm text-discord-text">{profileUser.aboutMe || "No bio set."}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-wind-muted">About Me</p>
+              <p className="mt-1 whitespace-pre-wrap text-sm text-wind-text">{profileUser.aboutMe || "No bio set."}</p>
 
               {diskchatMemberSince || serverJoinDate || friendsSince ? (
                 <div className="mt-4 border-t border-white/[0.06] pt-4">
                   {diskchatMemberSince ? (
                     <div>
-                      <p className="text-[11px] font-semibold uppercase tracking-wide text-discord-muted">Windcord Member Since</p>
-                      <p className="mt-1 text-sm text-discord-text">{diskchatMemberSince}</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-wind-muted">Windcord Member Since</p>
+                      <p className="mt-1 text-sm text-wind-text">{diskchatMemberSince}</p>
                     </div>
                   ) : null}
                   {serverJoinDate ? (
                     <div className={diskchatMemberSince ? "mt-3" : undefined}>
-                      <p className="text-[11px] font-semibold uppercase tracking-wide text-discord-muted">{serverMembershipLabel}</p>
-                      <p className="mt-1 text-sm text-discord-text">{serverJoinDate}</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-wind-muted">{serverMembershipLabel}</p>
+                      <p className="mt-1 text-sm text-wind-text">{serverJoinDate}</p>
                     </div>
                   ) : null}
                   {friendsSince ? (
                     <div className={diskchatMemberSince || serverJoinDate ? "mt-3" : undefined}>
-                      <p className="text-[11px] font-semibold uppercase tracking-wide text-discord-muted">Friends Since</p>
-                      <p className="mt-1 text-sm text-discord-text">{friendsSince}</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-wind-muted">Friends Since</p>
+                      <p className="mt-1 text-sm text-wind-text">{friendsSince}</p>
                     </div>
                   ) : null}
                 </div>
@@ -153,9 +153,9 @@ const UserProfileModal = ({ user, open, serverName, serverMemberSince, me, frien
                   className="flex w-full items-center justify-between p-3 text-left"
                   onClick={() => setServersExpanded((v) => !v)}
                 >
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-discord-muted">Mutual Servers — {mutualServers.length}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-wide text-wind-muted">Mutual Servers — {mutualServers.length}</p>
                   <svg
-                    className={`h-3 w-3 flex-shrink-0 text-discord-muted transition-transform duration-150 ${serversExpanded ? "rotate-180" : ""}`}
+                    className={`h-3 w-3 flex-shrink-0 text-wind-muted transition-transform duration-150 ${serversExpanded ? "rotate-180" : ""}`}
                     viewBox="0 0 12 12"
                     fill="currentColor"
                   >
@@ -170,7 +170,7 @@ const UserProfileModal = ({ user, open, serverName, serverMemberSince, me, frien
                           ? <img src={resolveMediaUrl(server.iconUrl) ?? ""} alt={server.name} className="h-8 w-8 rounded-full object-cover flex-shrink-0" />
                           : <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[linear-gradient(180deg,var(--wc-active-top),var(--wc-active-bottom))] text-xs font-bold text-white">{server.name.charAt(0).toUpperCase()}</div>
                         }
-                        <span className="truncate text-sm text-discord-text">{server.name}</span>
+                        <span className="truncate text-sm text-wind-text">{server.name}</span>
                       </div>
                     ))}
                   </div>
@@ -182,7 +182,7 @@ const UserProfileModal = ({ user, open, serverName, serverMemberSince, me, frien
               <div className="mt-3 flex gap-2">
                 {!isFriend ? (
                   isPendingOutgoing ? (
-                    <span className="flex-1 rounded bg-[#3a3d45] px-3 py-1.5 text-center text-sm text-discord-muted">Friend request sent</span>
+                    <span className="flex-1 rounded bg-[#3a3d45] px-3 py-1.5 text-center text-sm text-wind-muted">Friend request sent</span>
                   ) : (
                     <button
                       className="wc-accent-button flex-1 rounded-xl px-3 py-1.5 text-sm font-semibold text-white"
@@ -192,7 +192,7 @@ const UserProfileModal = ({ user, open, serverName, serverMemberSince, me, frien
                     </button>
                   )
                 ) : (
-                  <span className="wc-secondary-button flex-1 rounded-xl px-3 py-1.5 text-center text-sm text-discord-muted">Friends</span>
+                  <span className="wc-secondary-button flex-1 rounded-xl px-3 py-1.5 text-center text-sm text-wind-muted">Friends</span>
                 )}
                 <button
                   className="wc-secondary-button flex-1 rounded-xl px-3 py-1.5 text-sm font-semibold text-white"
@@ -205,8 +205,8 @@ const UserProfileModal = ({ user, open, serverName, serverMemberSince, me, frien
                 </button>
               </div>
             ) : null}
-            {isDeletedUser ? <p className="mt-3 text-xs text-discord-muted">This account has been deleted.</p> : null}
-            {isSystemUser ? <p className="mt-3 text-xs text-discord-muted">System account cannot be friended or messaged.</p> : null}
+            {isDeletedUser ? <p className="mt-3 text-xs text-wind-muted">This account has been deleted.</p> : null}
+            {isSystemUser ? <p className="mt-3 text-xs text-wind-muted">System account cannot be friended or messaged.</p> : null}
           </div>
         </div>
           </motion.section>

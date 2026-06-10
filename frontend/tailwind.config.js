@@ -4,8 +4,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        discord: {
-          blurple: "#5865f2",
+        wind: {
+          accent: "#5865f2",
           dark0: "#202225",
           dark1: "#2b2d31",
           dark2: "#2f3136",

@@ -88,10 +88,10 @@ const CreateServerModal = ({ open, onClose, onCreated }: Props): JSX.Element | n
                 title="Use 3-12 lowercase letters, numbers, or hyphens."
                 maxLength={12}
               />
-              <input className="mt-3 w-full text-sm text-discord-muted file:mr-3 file:rounded-xl file:border-0 file:bg-white/[0.08] file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-white/[0.12]" type="file" accept="image/*" onChange={(e) => onIconPicked(e.target.files?.[0] ?? null)} />
-              {icon ? <p className="mt-1 text-[11px] text-discord-muted">Edited icon ready.</p> : null}
+              <input className="mt-3 w-full text-sm text-wind-muted file:mr-3 file:rounded-xl file:border-0 file:bg-white/[0.08] file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-white/[0.12]" type="file" accept="image/*" onChange={(e) => onIconPicked(e.target.files?.[0] ?? null)} />
+              {icon ? <p className="mt-1 text-[11px] text-wind-muted">Edited icon ready.</p> : null}
               <div className="mt-4 flex justify-end gap-2">
-                <button type="button" onClick={onClose} className="rounded-xl px-3 py-1.5 text-sm text-discord-muted transition hover:bg-white/[0.05] hover:text-white">
+                <button type="button" onClick={onClose} className="rounded-xl px-3 py-1.5 text-sm text-wind-muted transition hover:bg-white/[0.05] hover:text-white">
                   Cancel
                 </button>
                 <button type="submit" className="rounded-xl bg-[linear-gradient(180deg,var(--wc-active-top),var(--wc-active-bottom))] px-3 py-1.5 text-sm font-semibold text-white transition hover:-translate-y-[1px] hover:brightness-110">

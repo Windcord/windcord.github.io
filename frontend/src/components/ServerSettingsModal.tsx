@@ -230,24 +230,24 @@ const ServerSettingsModal = ({ open, server, isOwner, canViewBans = false, onClo
           {visibleTabs.map((t) => (
             <button
               key={t}
-              className={`px-4 py-3 text-sm font-semibold capitalize transition ${tab === t ? "border-b-2 border-[rgba(255,255,255,0.5)] text-white" : "text-discord-muted hover:text-white"}`}
+              className={`px-4 py-3 text-sm font-semibold capitalize transition ${tab === t ? "border-b-2 border-[rgba(255,255,255,0.5)] text-white" : "text-wind-muted hover:text-white"}`}
               onClick={() => setTab(t)}
             >
               {t}
             </button>
           ))}
-          <button className="ml-auto px-4 py-3 text-sm text-discord-muted hover:text-white" onClick={onClose}>✕</button>
+          <button className="ml-auto px-4 py-3 text-sm text-wind-muted hover:text-white" onClick={onClose}>✕</button>
         </div>
 
-        <div className="discord-scrollbar min-h-0 flex-1 overflow-y-auto p-5">
+        <div className="wind-scrollbar min-h-0 flex-1 overflow-y-auto p-5">
           {tab === "general" ? (
             <form onSubmit={save}>
               <h2 className="mb-3 text-lg font-semibold">Server Settings</h2>
-              <label className="block text-xs text-discord-muted">
+              <label className="block text-xs text-wind-muted">
                 Server Name
                 <input className={settingsInputClass} value={name} onChange={(e) => setName(e.target.value)} />
               </label>
-              <label className="mt-3 block text-xs text-discord-muted">
+              <label className="mt-3 block text-xs text-wind-muted">
                 Server Description
                 <textarea
                   className={`${settingsInputClass} min-h-[88px] resize-y`}
@@ -256,14 +256,14 @@ const ServerSettingsModal = ({ open, server, isOwner, canViewBans = false, onClo
                   placeholder="Give your server a quick description for invites and previews."
                   maxLength={240}
                 />
-                <div className="mt-1 text-[11px] text-discord-muted">{description.length}/240</div>
+                <div className="mt-1 text-[11px] text-wind-muted">{description.length}/240</div>
               </label>
-              <label className="mt-3 block text-xs text-discord-muted">
+              <label className="mt-3 block text-xs text-wind-muted">
                 Server Banner
                 <div className="mt-2 overflow-hidden rounded-[22px] border border-white/[0.06]">
                   <div className="h-28 w-full" style={bannerStyle} />
                 </div>
-                <input className="mt-2 w-full text-sm text-discord-muted file:mr-3 file:rounded-xl file:border-0 file:bg-white/[0.08] file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-white/[0.12]" type="file" accept="image/*" onChange={(e) => onBannerPicked(e.target.files?.[0] ?? null)} />
+                <input className="mt-2 w-full text-sm text-wind-muted file:mr-3 file:rounded-xl file:border-0 file:bg-white/[0.08] file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-white/[0.12]" type="file" accept="image/*" onChange={(e) => onBannerPicked(e.target.files?.[0] ?? null)} />
                 <div className="mt-2 flex items-center gap-2">
                   <button
                     type="button"
@@ -276,9 +276,9 @@ const ServerSettingsModal = ({ open, server, isOwner, canViewBans = false, onClo
                   {removeBannerImage ? <span className="text-[11px]">Banner will be removed on save.</span> : null}
                 </div>
               </label>
-              <label className="mt-3 block text-xs text-discord-muted">
+              <label className="mt-3 block text-xs text-wind-muted">
                 Icon
-                <input className="mt-2 w-full text-sm text-discord-muted file:mr-3 file:rounded-xl file:border-0 file:bg-white/[0.08] file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-white/[0.12]" type="file" accept="image/*" onChange={(e) => onIconPicked(e.target.files?.[0] ?? null)} />
+                <input className="mt-2 w-full text-sm text-wind-muted file:mr-3 file:rounded-xl file:border-0 file:bg-white/[0.08] file:px-3 file:py-2 file:text-xs file:font-semibold file:text-white hover:file:bg-white/[0.12]" type="file" accept="image/*" onChange={(e) => onIconPicked(e.target.files?.[0] ?? null)} />
                 <div className="mt-2 flex items-center gap-2">
                   <button
                     type="button"
@@ -294,7 +294,7 @@ const ServerSettingsModal = ({ open, server, isOwner, canViewBans = false, onClo
                   {removeIcon ? <span className="text-[11px]">Icon will be removed on save.</span> : null}
                 </div>
               </label>
-              <label className="mt-3 block text-xs text-discord-muted">
+              <label className="mt-3 block text-xs text-wind-muted">
                 Invite Code
                 <input
                   className={settingsInputClass}
@@ -327,7 +327,7 @@ const ServerSettingsModal = ({ open, server, isOwner, canViewBans = false, onClo
               </div>
 
               <div className="mt-4 flex justify-end gap-2">
-                <button type="button" onClick={onClose} className="rounded-xl px-3 py-1.5 text-sm text-discord-muted hover:bg-white/[0.05] hover:text-white">Cancel</button>
+                <button type="button" onClick={onClose} className="rounded-xl px-3 py-1.5 text-sm text-wind-muted hover:bg-white/[0.05] hover:text-white">Cancel</button>
                 <button type="submit" className="rounded-xl bg-[linear-gradient(180deg,var(--wc-active-top),var(--wc-active-bottom))] px-3 py-1.5 text-sm font-semibold text-white">Save</button>
               </div>
             </form>
@@ -366,11 +366,11 @@ const ServerSettingsModal = ({ open, server, isOwner, canViewBans = false, onClo
                         </button>
                       </>
                     ) : (
-                      <span className="text-xs text-discord-muted">Owner</span>
+                      <span className="text-xs text-wind-muted">Owner</span>
                     )}
                   </div>
                 ))}
-                {!members.length ? <p className="text-sm text-discord-muted">No members</p> : null}
+                {!members.length ? <p className="text-sm text-wind-muted">No members</p> : null}
               </div>
             </div>
           ) : (
@@ -394,7 +394,7 @@ const ServerSettingsModal = ({ open, server, isOwner, canViewBans = false, onClo
                     </button>
                   </div>
                 ))}
-                {!bans.length ? <p className="text-sm text-discord-muted">No banned members</p> : null}
+                {!bans.length ? <p className="text-sm text-wind-muted">No banned members</p> : null}
               </div>
             </div>
           )}
@@ -457,7 +457,7 @@ const ServerSettingsModal = ({ open, server, isOwner, canViewBans = false, onClo
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-white">{editingMember.user.nickname || editingMember.user.username}</h3>
-                    <p className="text-xs text-discord-muted">Edit permissions</p>
+                    <p className="text-xs text-wind-muted">Edit permissions</p>
                   </div>
                 </div>
 
@@ -466,11 +466,11 @@ const ServerSettingsModal = ({ open, server, isOwner, canViewBans = false, onClo
                     <label key={option.key} className="flex cursor-pointer items-center justify-between rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2.5 hover:bg-white/[0.04]">
                       <div className="flex-1">
                         <div className="text-sm font-medium text-white">{option.label}</div>
-                        <div className="text-[11px] text-discord-muted">{option.description}</div>
+                        <div className="text-[11px] text-wind-muted">{option.description}</div>
                       </div>
                       <input
                         type="checkbox"
-                        className="h-4 w-4 accent-discord-blurple"
+                        className="h-4 w-4 accent-wind-accent"
                         checked={memberPermissions[option.key] || false}
                         onChange={(e) => setMemberPermissions((prev) => ({ ...prev, [option.key]: e.target.checked }))}
                       />
@@ -480,7 +480,7 @@ const ServerSettingsModal = ({ open, server, isOwner, canViewBans = false, onClo
 
                 <div className="mt-6 flex justify-end gap-2">
                   <button
-                    className="rounded-xl px-4 py-1.5 text-sm text-discord-muted hover:bg-white/[0.05] hover:text-white"
+                    className="rounded-xl px-4 py-1.5 text-sm text-wind-muted hover:bg-white/[0.05] hover:text-white"
                     onClick={() => setPermissionsModalOpen(false)}
                   >
                     Cancel

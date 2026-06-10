@@ -16,7 +16,7 @@ const AppRouter = (): JSX.Element => {
   }, [restoreSession]);
 
   if (loading) {
-    return <div className="grid h-screen place-items-center bg-discord-dark5 text-discord-text">Loading...</div>;
+    return <div className="grid h-screen place-items-center bg-wind-dark5 text-wind-text">Loading...</div>;
   }
 
   return (

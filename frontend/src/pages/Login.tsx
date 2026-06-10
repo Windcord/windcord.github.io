@@ -101,7 +101,7 @@ const LoginPage = (): JSX.Element => {
         className="wc-modal-card w-full max-w-md rounded-[28px] p-8"
       >
         <h1 className="mb-2 text-center text-2xl font-bold text-white">Welcome to Windcord</h1>
-        <p className="mb-6 text-center text-sm text-discord-muted">
+        <p className="mb-6 text-center text-sm text-wind-muted">
           {isRecoveryHandoff
             ? recoveryStep === "register"
               ? "Step 2 of 2: save your recovery key before entering Windcord"
@@ -175,7 +175,7 @@ const LoginPage = (): JSX.Element => {
         ) : null}
 
         {!isRecoveryHandoff ? <form onSubmit={onSubmit} className="space-y-4">
-          <label className="block text-xs font-semibold uppercase tracking-wider text-discord-muted">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-wind-muted">
             Username
             <input
               value={username}
@@ -186,11 +186,11 @@ const LoginPage = (): JSX.Element => {
               maxLength={32}
               pattern="[A-Za-z0-9]{2,32}"
             />
-            <span className="mt-1 block text-[11px] text-discord-muted">Letters and numbers only, no spaces.</span>
+            <span className="mt-1 block text-[11px] text-wind-muted">Letters and numbers only, no spaces.</span>
           </label>
 
           {mode === "register" ? (
-            <label className="block text-xs font-semibold uppercase tracking-wider text-discord-muted">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-wind-muted">
               Nickname
               <input
                 value={nickname}
@@ -204,7 +204,7 @@ const LoginPage = (): JSX.Element => {
           ) : null}
 
           {mode === "reset" ? (
-            <label className="block text-xs font-semibold uppercase tracking-wider text-discord-muted">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-wind-muted">
               Recovery Key
               <input
                 value={recoveryCode}
@@ -218,7 +218,7 @@ const LoginPage = (): JSX.Element => {
             </label>
           ) : null}
 
-          <label className="block text-xs font-semibold uppercase tracking-wider text-discord-muted">
+          <label className="block text-xs font-semibold uppercase tracking-wider text-wind-muted">
             {mode === "reset" ? "New Password" : "Password"}
             <input
               type="password"
@@ -228,11 +228,11 @@ const LoginPage = (): JSX.Element => {
               required
               minLength={mode === "login" ? 1 : 8}
             />
-            {mode !== "login" ? <span className="mt-1 block text-[11px] text-discord-muted">Use at least 8 characters.</span> : null}
+            {mode !== "login" ? <span className="mt-1 block text-[11px] text-wind-muted">Use at least 8 characters.</span> : null}
           </label>
 
           {mode === "reset" ? (
-            <label className="block text-xs font-semibold uppercase tracking-wider text-discord-muted">
+            <label className="block text-xs font-semibold uppercase tracking-wider text-wind-muted">
               Confirm New Password
               <input
                 type="password"

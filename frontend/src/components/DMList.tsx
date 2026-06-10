@@ -33,9 +33,9 @@ const DMList = ({ dms, me, activeDMId, onOpenDM, onRemoveDM, unreadDMs, fullHeig
   return (
     <section className={`${fullHeight ? "flex min-h-0 flex-1 flex-col bg-transparent" : "border-t border-black/20 p-2"}`}>
       <div className={`${fullHeight ? "wc-sidebar-header p-2" : ""}`}>
-        <p className="px-2 text-[11px] font-semibold uppercase tracking-wide text-discord-muted">Direct Messages</p>
+        <p className="px-2 text-[11px] font-semibold uppercase tracking-wide text-wind-muted">Direct Messages</p>
       </div>
-      <div className={`${fullHeight ? "discord-scrollbar min-h-0 flex-1 overflow-y-auto bg-transparent p-2.5" : "mt-2"}`}>
+      <div className={`${fullHeight ? "wind-scrollbar min-h-0 flex-1 overflow-y-auto bg-transparent p-2.5" : "mt-2"}`}>
         <div className="space-y-1">
           {dms.map((dm) => {
             const other = dm.participants.find((p) => p.id !== me?.id) ?? null;
@@ -52,7 +52,7 @@ const DMList = ({ dms, me, activeDMId, onOpenDM, onRemoveDM, unreadDMs, fullHeig
                 className={`flex w-full items-center gap-2 rounded-xl border px-2.5 py-2 text-sm transition ${
                   activeDMId === dm.id
                     ? "border-white/[0.06] text-white"
-                    : "border-transparent text-discord-muted hover:border-white/[0.03] hover:bg-white/[0.04] hover:text-discord-text"
+                    : "border-transparent text-wind-muted hover:border-white/[0.03] hover:bg-white/[0.04] hover:text-wind-text"
                 }`} style={activeDMId === dm.id ? { background: "var(--wc-dm-active-bg)" } : undefined}
               >
                 <div className="relative h-8 w-8 shrink-0">
@@ -69,11 +69,11 @@ const DMList = ({ dms, me, activeDMId, onOpenDM, onRemoveDM, unreadDMs, fullHeig
                 </div>
                 <span className="min-w-0 flex-1 text-left">
                   <span className="block truncate">{display || "Unnamed DM"}</span>
-                  <span className="block truncate text-xs text-discord-muted">{statusText}</span>
+                  <span className="block truncate text-xs text-wind-muted">{statusText}</span>
                 </span>
                 {unread > 0 ? (
-                  <span className="shrink-0 rounded-full bg-[#ed4245] px-1.5 text-[10px] font-semibold text-white">
-                    {unread}
+                  <span className="inline-flex h-5 min-w-[20px] shrink-0 items-center justify-center rounded-full bg-[#ed4245] px-1 text-[10px] font-semibold leading-none text-white">
+                    {Math.min(unread, 99)}
                   </span>
                 ) : null}
                 <button
@@ -82,7 +82,7 @@ const DMList = ({ dms, me, activeDMId, onOpenDM, onRemoveDM, unreadDMs, fullHeig
                     event.stopPropagation();
                     onRemoveDM(dm.id);
                   }}
-                  className="shrink-0 rounded-lg p-1 text-discord-muted transition hover:bg-white/6 hover:text-white"
+                  className="shrink-0 rounded-lg p-1 text-wind-muted transition hover:bg-white/6 hover:text-white"
                   title="Remove from list"
                   aria-label="Remove from list"
                 >

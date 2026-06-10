@@ -36,18 +36,18 @@ const SystemNoticeBanner = ({ notices, onDismiss }: Props): JSX.Element | null =
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start gap-2">
                     <div className="min-w-0 flex-1">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-discord-muted">Platform Notice</p>
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-wind-muted">Platform Notice</p>
                       <p className="mt-1 text-[15px] font-semibold leading-tight text-white">{notice.title}</p>
                     </div>
                     <button
-                      className="shrink-0 rounded-lg p-1 text-discord-muted transition hover:bg-white/[0.06] hover:text-white"
+                      className="shrink-0 rounded-lg p-1 text-wind-muted transition hover:bg-white/[0.06] hover:text-white"
                       onClick={() => onDismiss(notice.id)}
                       title="Dismiss"
                     >
                       <X size={13} />
                     </button>
                   </div>
-                  <p className="mt-2 line-clamp-2 text-[13px] leading-5 text-discord-muted">{notice.body}</p>
+                  <p className="mt-2 line-clamp-2 text-[13px] leading-5 text-wind-muted">{notice.body}</p>
                   <div className="mt-3 flex items-center justify-start gap-2">
                     <button
                       className="wc-secondary-button rounded-xl px-3 py-1.5 text-[11px] font-semibold text-white transition hover:text-white"
@@ -90,11 +90,11 @@ const SystemNoticeBanner = ({ notices, onDismiss }: Props): JSX.Element | null =
                     <Megaphone size={18} className="shrink-0 text-white" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-discord-muted">Admin Announcement</p>
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-wind-muted">Admin Announcement</p>
                     <p className="mt-2 text-[22px] font-bold leading-7 text-white">{expanded.title}</p>
                   </div>
                   <button
-                    className="shrink-0 rounded-xl p-2 text-discord-muted transition hover:bg-white/[0.06] hover:text-white"
+                    className="shrink-0 rounded-xl p-2 text-wind-muted transition hover:bg-white/[0.06] hover:text-white"
                     onClick={() => setExpandedId(null)}
                   >
                     <X size={16} />
@@ -103,12 +103,12 @@ const SystemNoticeBanner = ({ notices, onDismiss }: Props): JSX.Element | null =
               </div>
               <div className="px-6 py-5">
                 <div className="wc-notice-body-panel rounded-[22px] px-4 py-3">
-                  <p className="whitespace-pre-wrap text-sm leading-7 text-discord-text">{expanded.body}</p>
+                  <p className="whitespace-pre-wrap text-sm leading-7 text-wind-text">{expanded.body}</p>
                 </div>
               </div>
               <div className="flex items-center justify-end gap-2 border-t border-white/[0.06] px-6 py-4">
                 <button
-                  className="wc-secondary-button rounded-xl px-4 py-2 text-sm font-medium text-discord-text transition hover:text-white"
+                  className="wc-secondary-button rounded-xl px-4 py-2 text-sm font-medium text-wind-text transition hover:text-white"
                   onClick={() => setExpandedId(null)}
                 >
                   Close

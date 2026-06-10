@@ -65,7 +65,7 @@ const FriendsPanel = ({
           >
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-lg font-semibold">Friends</h2>
-              <button className="text-sm text-discord-muted hover:-translate-y-[1px] hover:text-white" onClick={onClose}>Close</button>
+              <button className="text-sm text-wind-muted hover:-translate-y-[1px] hover:text-white" onClick={onClose}>Close</button>
             </div>
 
             <form onSubmit={submit} className="mb-4 flex gap-2">
@@ -80,7 +80,7 @@ const FriendsPanel = ({
 
             <div className="grid gap-4 md:grid-cols-2">
               <section>
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-discord-muted">Pending</h3>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-wind-muted">Pending</h3>
                 <div className="space-y-1">
                   {pending.map((request) => (
                     <div key={request.id} className="flex items-center gap-2 rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2.5 text-sm">
@@ -92,12 +92,12 @@ const FriendsPanel = ({
                       <button className="text-xs text-[#ed4245] hover:-translate-y-[1px]" onClick={() => void onReject(request.id)}>Decline</button>
                     </div>
                   ))}
-                  {!pending.length ? <p className="text-xs text-discord-muted">No pending requests</p> : null}
+                  {!pending.length ? <p className="text-xs text-wind-muted">No pending requests</p> : null}
                 </div>
               </section>
 
               <section>
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-discord-muted">All Friends</h3>
+                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-wind-muted">All Friends</h3>
                 <div className="space-y-1">
                   {friends.map((friend) => (
                     <div key={friend.id} className="flex items-center gap-2 rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2.5 text-sm">
@@ -109,7 +109,7 @@ const FriendsPanel = ({
                       <button className="text-xs text-[#ed4245] hover:-translate-y-[1px]" onClick={() => void onRemoveFriend(friend.id)}>Remove</button>
                     </div>
                   ))}
-                  {!friends.length ? <p className="text-xs text-discord-muted">No friends yet</p> : null}
+                  {!friends.length ? <p className="text-xs text-wind-muted">No friends yet</p> : null}
                 </div>
               </section>
             </div>

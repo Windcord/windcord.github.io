@@ -74,9 +74,9 @@ const MemberList = ({ members, onSelectUser, canModerate = false, currentUserId,
           </div>
         ) : null}
 
-        <div className="discord-scrollbar min-h-0 flex-1 overflow-y-auto p-3.5 text-sm">
+        <div className="wind-scrollbar min-h-0 flex-1 overflow-y-auto p-3.5 text-sm">
         <section>
-          <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-discord-muted">Online — {online.length}</h3>
+          <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-wind-muted">Online — {online.length}</h3>
           <div className="space-y-1">
             {online.map((member) => {
               const displayName = member.nickname || member.user.nickname || member.user.username;
@@ -100,7 +100,7 @@ const MemberList = ({ members, onSelectUser, canModerate = false, currentUserId,
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium" style={{ color: member.nickColor ?? "#f2f3f5" }}>{displayName}</p>
-                    <p className="truncate text-[11px] text-discord-muted">{secondary}</p>
+                    <p className="truncate text-[11px] text-wind-muted">{secondary}</p>
                   </div>
                 </div>
               );
@@ -109,7 +109,7 @@ const MemberList = ({ members, onSelectUser, canModerate = false, currentUserId,
         </section>
 
         <section className="mt-5">
-          <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-discord-muted">Offline — {offline.length}</h3>
+          <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-wind-muted">Offline — {offline.length}</h3>
           <div className="space-y-1">
             {offline.map((member) => {
               const displayName = member.nickname || member.user.nickname || member.user.username;
@@ -117,7 +117,7 @@ const MemberList = ({ members, onSelectUser, canModerate = false, currentUserId,
               return (
                 <div
                   key={member.userId}
-                  className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-left text-discord-muted transition hover:bg-white/[0.04]"
+                  className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-left text-wind-muted transition hover:bg-white/[0.04]"
                   onClick={() => onSelectUser(member.user)}
                   onContextMenu={(event) => handleMemberContextMenu(event, member)}
                 >
@@ -151,7 +151,7 @@ const MemberList = ({ members, onSelectUser, canModerate = false, currentUserId,
         >
           {contextMenu.isSelf ? (
             <button
-              className="w-full px-3 py-2 text-left text-sm text-discord-text transition hover:bg-white/[0.06]"
+              className="w-full px-3 py-2 text-left text-sm text-wind-text transition hover:bg-white/[0.06]"
               onClick={() => {
                 onSetNickColor?.();
                 setContextMenu(null);

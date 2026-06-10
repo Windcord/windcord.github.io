@@ -189,11 +189,7 @@ exports.getDMMessageContext = getDMMessageContext;
 const searchDMMessages = async (req, res) => {
     const userId = req.user.id;
     const { dmChannelId } = req.params;
-    const { q, page: pageStr, pageSize: pageSizeStr } = req.query;
-    if (!q || q.trim().length === 0) {
-        res.status(400).json({ message: "Search query is required" });
-        return;
-    }
+    const { q, page: pageStr, pageSize: pageSizeStr, sort: sortStr, authorId } = req.query;
     const channel = await prismaAny.dMChannel.findFirst({
         where: { id: dmChannelId, participants: { some: { id: userId } } },
         select: { id: true }
@@ -204,22 +200,32 @@ const searchDMMessages = async (req, res) => {
     }
     const requestedPage = Math.max(1, parseInt(pageStr || "1", 10) || 1);
     const pageSize = Math.min(Math.max(1, parseInt(pageSizeStr || "25", 10) || 25), 50);
-    const searchTerm = q.trim().toLowerCase();
+    const trimmedQuery = typeof q === "string" ? q.trim() : "";
+    const sort = sortStr === "old" ? "asc" : "desc";
+    const where = {
+        dmChannelId,
+        ...(trimmedQuery
+            ? {
+                content: {
+                    contains: trimmedQuery
+                }
+            }
+            : {}),
+        ...(authorId?.trim() ? { authorId: authorId.trim() } : {})
+    };
     try {
-        const messages = await prismaAny.dMMessage.findMany({
-            where: { dmChannelId },
-            include: dmMessageDetailsInclude,
-            orderBy: { createdAt: "desc" }
-        });
-        const filtered = messages
-            .filter((message) => message.content && message.content.toLowerCase().includes(searchTerm));
-        const total = filtered.length;
+        const total = await prismaAny.dMMessage.count({ where });
         const totalPages = Math.max(1, Math.ceil(total / pageSize));
         const page = Math.min(requestedPage, totalPages);
         const offset = (page - 1) * pageSize;
-        const results = filtered
-            .slice(offset, offset + pageSize)
-            .map((message) => ({
+        const messages = await prismaAny.dMMessage.findMany({
+            where,
+            include: dmMessageDetailsInclude,
+            orderBy: { createdAt: sort },
+            skip: offset,
+            take: pageSize
+        });
+        const results = messages.map((message) => ({
             message,
             highlightedText: message.content || ""
         }));

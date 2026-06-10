@@ -140,6 +140,16 @@ const formatMessageTimestamp = (value: string | Date): string => {
   return `${date}, ${time}`;
 };
 
+const formatMessageDayDivider = (value: string | Date): string => {
+  const messageDate = value instanceof Date ? value : new Date(value);
+  return messageDate.toLocaleDateString([], {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  });
+};
+
 const isHighSurrogate = (codeUnit: number): boolean => codeUnit >= 0xd800 && codeUnit <= 0xdbff;
 const isLowSurrogate = (codeUnit: number): boolean => codeUnit >= 0xdc00 && codeUnit <= 0xdfff;
 
@@ -2940,6 +2950,9 @@ const ChatArea = ({
             const authorName = message.author.nickname?.trim() || message.author.username;
             const hasReplyPreview = "replyTo" in message && Boolean(message.replyTo);
             const previousMessage = messages[index - 1];
+            const showDayDivider = previousMessage
+              ? !isSameLocalDay(new Date(previousMessage.createdAt), new Date(message.createdAt))
+              : false;
             const previousSameAuthor = previousMessage?.authorId === message.authorId;
             const deltaMs = previousMessage
               ? new Date(message.createdAt).getTime() - new Date(previousMessage.createdAt).getTime()
@@ -2953,7 +2966,16 @@ const ChatArea = ({
             const messageRef = stableRefsMap.current[message.id]!;
             const isFirstUnread = focusMessageMode === "unread" && focusMessageId === message.id;
             return (
-              <Fragment key={message.id}>
+              <div ref={messageRef} key={message.id} id={`message-${message.id}`}>
+                {showDayDivider ? (
+                  <div className="mx-2 my-3 flex items-center gap-3 select-none" aria-label={formatMessageDayDivider(message.createdAt)}>
+                    <div className="h-px flex-1 bg-white/10" />
+                    <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1 text-[11px] font-semibold tracking-wide text-discord-muted">
+                      {formatMessageDayDivider(message.createdAt)}
+                    </span>
+                    <div className="h-px flex-1 bg-white/10" />
+                  </div>
+                ) : null}
                 {isFirstUnread ? (
                   <div className="mx-2 my-1 flex items-center gap-2 select-none" aria-label="New messages">
                     <div className="h-px flex-1 bg-[#f23f43]/60" />
@@ -2964,9 +2986,6 @@ const ChatArea = ({
                   </div>
                 ) : null}
               <article
-                ref={messageRef}
-                key={message.id}
-                id={`message-${message.id}`}
                 className={`group relative mb-0 flex gap-3 rounded px-2 isolate ${groupedCompact ? "py-0.5" : "py-1"} ${overlayMenuOpen ? "" : mentionMe ? "hover:brightness-95" : "hover:bg-black/10"} ${highlightMessageId === message.id || isReplyTarget ? "rounded-lg" : ""} ${highlightMessageId === message.id ? "message-search-highlight" : ""}`}
                 style={mentionMe ? { backgroundColor: "var(--wc-mention-me-bg)" } : highlightMessageId === message.id ? { backgroundColor: "var(--wc-reply-highlight-bg)", boxShadow: `inset 0 0 0 1px var(--wc-highlight-ring)` } : isReplyTarget ? { backgroundColor: "var(--wc-reply-target-bg)", boxShadow: `inset 0 0 0 1px var(--wc-highlight-ring)` } : undefined}
                 onClick={() => {
@@ -3050,91 +3069,101 @@ const ChatArea = ({
                   ) : null}
 
                   {editingId === message.id ? (
-                    <div className="mt-1 flex flex-col gap-1.5">
-                      <div className="relative min-w-0 w-full">
-                        {editingDraft ? (
-                          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded bg-[#1e1f22] px-2 pb-1.5 pt-[calc(0.375rem+3px)] text-sm text-white">
-                            <div ref={editPreviewRef} className="whitespace-pre-wrap break-words">
-                              {renderEmojiText(editingDraft, `edit-draft-${message.id}`)}
+                    <div className="mt-1 flex flex-col gap-2">
+                      <div className="wc-compose-box rounded-[20px] px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+                        <div className="relative min-w-0 w-full">
+                          {editingDraft ? (
+                            <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden pt-[3px] text-sm leading-5 text-white">
+                              <div ref={editPreviewRef} className="min-h-full min-w-full whitespace-pre-wrap break-words pr-2">
+                                {renderEmojiText(editingDraft, `edit-draft-${message.id}`)}
+                              </div>
                             </div>
-                          </div>
-                        ) : null}
-                        <textarea
-                          ref={(el) => {
-                            (editInputRef as React.MutableRefObject<HTMLTextAreaElement | null>).current = el;
-                            if (el) {
-                              el.focus();
-                              el.setSelectionRange(el.value.length, el.value.length);
-                            }
-                          }}
-                          value={editingDraft}
-                          rows={1}
-                          maxLength={MESSAGE_CHAR_LIMIT}
-                          onChange={(event) => setEditingDraft(clampComposerContent(replaceCompletedEmojiShortcodes(event.target.value)))}
-                          onKeyDown={(e) => {
-                            if (emojiMenuOpen) {
-                              if (e.key === "ArrowDown") {
-                                e.preventDefault();
-                                setHighlightedEmojiIndex((current) => (current + 1) % emojiCandidates.length);
-                                return;
+                          ) : null}
+                          <textarea
+                            ref={(el) => {
+                              (editInputRef as React.MutableRefObject<HTMLTextAreaElement | null>).current = el;
+                              if (el) {
+                                el.focus();
+                                el.setSelectionRange(el.value.length, el.value.length);
                               }
-                              if (e.key === "ArrowUp") {
-                                e.preventDefault();
-                                setHighlightedEmojiIndex((current) => (current - 1 + emojiCandidates.length) % emojiCandidates.length);
-                                return;
+                            }}
+                            value={editingDraft}
+                            rows={1}
+                            maxLength={MESSAGE_CHAR_LIMIT}
+                            onChange={(event) => setEditingDraft(clampComposerContent(replaceCompletedEmojiShortcodes(event.target.value)))}
+                            onKeyDown={(e) => {
+                              if (emojiMenuOpen) {
+                                if (e.key === "ArrowDown") {
+                                  e.preventDefault();
+                                  setHighlightedEmojiIndex((current) => (current + 1) % emojiCandidates.length);
+                                  return;
+                                }
+                                if (e.key === "ArrowUp") {
+                                  e.preventDefault();
+                                  setHighlightedEmojiIndex((current) => (current - 1 + emojiCandidates.length) % emojiCandidates.length);
+                                  return;
+                                }
+                                if (e.key === "Enter" || e.key === "Tab") {
+                                  e.preventDefault();
+                                  selectEmoji(emojiCandidates[highlightedEmojiIndex] ?? emojiCandidates[0]);
+                                  return;
+                                }
                               }
-                              if (e.key === "Enter" || e.key === "Tab") {
-                                e.preventDefault();
-                                selectEmoji(emojiCandidates[highlightedEmojiIndex] ?? emojiCandidates[0]);
-                                return;
-                              }
-                            }
 
-                            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void submitInlineEdit(message.id); }
-                            if (e.key === "Escape") { setEditingId(null); setEditingDraft(""); }
-                          }}
-                          className={`emoji-hidden-text relative z-10 w-full resize-none overflow-hidden rounded bg-transparent px-2 pb-1.5 pt-[calc(0.375rem+3px)] text-sm whitespace-pre-wrap outline-none ${editingDraft ? "text-transparent caret-white" : "text-white"}`}
-                        />
-                        {emojiMenuOpen ? (
-                          <div className="absolute bottom-full left-0 right-0 z-40 mb-1 overflow-hidden rounded-md border border-white/[0.06] bg-[#111214] shadow-lg">
-                            <p className="px-3 pt-2 text-[11px] font-semibold uppercase tracking-wide text-discord-muted">
-                              Emojis matching :{emojiQuery}
-                            </p>
-                            <div ref={editEmojiMenuListRef} className="discord-scrollbar max-h-60 overflow-y-auto py-1">
-                              {emojiCandidates.map((emojiCandidate, index) => {
-                                const selected = index === highlightedEmojiIndex;
-                                return (
-                                  <button
-                                    key={emojiCandidate.unified}
-                                    type="button"
-                                    className={`flex w-full items-center gap-3 px-3 py-2 text-left ${selected ? "bg-[#3a3d45]" : "hover:bg-[#2b2d31]"}`}
-                                    onMouseDown={(event) => {
-                                      event.preventDefault();
-                                      selectEmoji(emojiCandidate);
-                                    }}
-                                  >
-                                    <EmojiGlyph emoji={emojiCandidate.emoji} sizeClassName="h-6 w-6" />
-                                    <span className="truncate text-sm text-white">:{emojiCandidate.name}:</span>
-                                  </button>
-                                );
-                              })}
+                              if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void submitInlineEdit(message.id); }
+                              if (e.key === "Escape") { setEditingId(null); setEditingDraft(""); }
+                            }}
+                            className={`emoji-hidden-text relative z-10 w-full resize-none overflow-hidden bg-transparent pt-[3px] text-sm leading-5 whitespace-pre-wrap outline-none selection:bg-transparent ${editingDraft ? "text-transparent caret-white" : "text-white"}`}
+                          />
+                          {emojiMenuOpen ? (
+                            <div className="wc-popover absolute bottom-full left-0 right-0 z-40 mb-2 overflow-hidden rounded-[20px]">
+                              <p className="px-3 pt-2 text-[11px] font-semibold uppercase tracking-wide text-discord-muted">
+                                Emojis matching :{emojiQuery}
+                              </p>
+                              <div ref={editEmojiMenuListRef} className="discord-scrollbar max-h-60 overflow-y-auto py-1">
+                                {emojiCandidates.map((emojiCandidate, index) => {
+                                  const selected = index === highlightedEmojiIndex;
+                                  return (
+                                    <button
+                                      key={emojiCandidate.unified}
+                                      type="button"
+                                      className={`flex w-full items-center gap-3 px-3 py-2 text-left transition ${selected ? "bg-[var(--wc-surface-tint-strong)]" : "text-discord-text hover:bg-white/[0.05]"}`}
+                                      onMouseDown={(event) => {
+                                        event.preventDefault();
+                                        selectEmoji(emojiCandidate);
+                                      }}
+                                    >
+                                      <EmojiGlyph emoji={emojiCandidate.emoji} sizeClassName="h-6 w-6" />
+                                      <span className="truncate text-sm text-white">:{emojiCandidate.name}:</span>
+                                    </button>
+                                  );
+                                })}
+                              </div>
                             </div>
-                          </div>
-                        ) : null}
+                          ) : null}
+                        </div>
                       </div>
-                      <div className="flex gap-2">
-                        <button className="rounded bg-discord-blurple px-2 py-1 text-xs" onClick={() => void submitInlineEdit(message.id)}>
-                          Save
-                        </button>
-                        <button
-                          className="rounded bg-[#3a3d45] px-2 py-1 text-xs"
-                          onClick={() => {
-                            setEditingId(null);
-                            setEditingDraft("");
-                          }}
-                        >
-                          Cancel
-                        </button>
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="text-[11px] text-discord-muted">Enter to save, Shift+Enter for newline, Esc to cancel.</p>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            className="wc-accent-button rounded-xl px-3 py-1.5 text-[11px] font-semibold text-white transition hover:text-white"
+                            onClick={() => void submitInlineEdit(message.id)}
+                          >
+                            Save changes
+                          </button>
+                          <button
+                            type="button"
+                            className="wc-secondary-button rounded-xl px-3 py-1.5 text-[11px] font-semibold text-discord-text transition hover:text-white"
+                            onClick={() => {
+                              setEditingId(null);
+                              setEditingDraft("");
+                            }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ) : (
@@ -3289,7 +3318,7 @@ const ChatArea = ({
                   </div>
                 ) : null}
               </article>
-              </Fragment>
+              </div>
             );
           })}
           {visibleRange.bottomPadding > 0 ? <div style={{ height: visibleRange.bottomPadding }} /> : null}

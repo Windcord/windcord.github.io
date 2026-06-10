@@ -111,7 +111,7 @@ const JoinInvitePage = (): JSX.Element => {
 
         <div className="px-6 pb-6 pt-0">
           {loading ? (
-            <div className="-mt-4 wc-surface-card rounded-[22px] px-4 py-5 text-center text-sm text-discord-muted">Loading invite...</div>
+            <div className="-mt-4 wc-surface-card rounded-[22px] px-4 py-5 text-center text-sm text-wind-muted">Loading invite...</div>
           ) : null}
 
           {error ? (
@@ -133,7 +133,7 @@ const JoinInvitePage = (): JSX.Element => {
                     />
                     <div className="min-w-0 flex-1 pt-3">
                       <h2 className="truncate text-xl font-bold text-white">{invite.server.name}</h2>
-                      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-discord-muted">
+                      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-wind-muted">
                         <span className="inline-flex items-center gap-1.5">
                           <span className="h-2 w-2 rounded-full bg-[#23a55a]" />
                           {invite.server.onlineCount} Online
@@ -143,15 +143,15 @@ const JoinInvitePage = (): JSX.Element => {
                           {invite.server.offlineCount} Offline
                         </span>
                       </div>
-                      {establishedLabel ? <p className="mt-1 text-xs text-discord-muted">{establishedLabel}</p> : null}
-                      {invite.server.description ? <p className="mt-3 text-sm leading-5 text-discord-muted">{invite.server.description}</p> : null}
+                      {establishedLabel ? <p className="mt-1 text-xs text-wind-muted">{establishedLabel}</p> : null}
+                      {invite.server.description ? <p className="mt-3 text-sm leading-5 text-wind-muted">{invite.server.description}</p> : null}
                     </div>
                   </div>
                 </div>
               </div>
 
               <button
-                className={`${alreadyJoined ? "wc-secondary-button text-discord-muted" : "wc-accent-button text-white"} mt-5 w-full rounded-2xl py-2.5 text-sm font-semibold`}
+                className={`${alreadyJoined ? "wc-secondary-button text-wind-muted" : "wc-accent-button text-white"} mt-5 w-full rounded-2xl py-2.5 text-sm font-semibold`}
                 onClick={() => void acceptInvite()}
                 disabled={alreadyJoined}
               >

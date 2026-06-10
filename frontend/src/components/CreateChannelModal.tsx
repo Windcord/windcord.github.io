@@ -71,7 +71,7 @@ const CreateChannelModal = ({ open, serverId, categories, onClose, onCreated }: 
             </select>
 
             <div className="mt-4 flex justify-end gap-2">
-              <button type="button" onClick={onClose} className="rounded-xl px-3 py-1.5 text-sm text-discord-muted transition hover:bg-white/[0.05] hover:text-white">
+              <button type="button" onClick={onClose} className="rounded-xl px-3 py-1.5 text-sm text-wind-muted transition hover:bg-white/[0.05] hover:text-white">
                 Cancel
               </button>
               <button type="submit" className="rounded-xl bg-[linear-gradient(180deg,var(--wc-active-top),var(--wc-active-bottom))] px-3 py-1.5 text-sm font-semibold text-white transition hover:-translate-y-[1px] hover:brightness-110">

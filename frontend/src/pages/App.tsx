@@ -26,6 +26,11 @@ import { useSystemStore } from "../lib/stores/systemStore";
 import { api } from "../lib/api";
 import type { Channel, User } from "../types";
 
+type NavigatorWithBadge = Navigator & {
+  setAppBadge?: (contents?: number) => Promise<void>;
+  clearAppBadge?: () => Promise<void>;
+};
+
 const MainPage = (): JSX.Element => {
   const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
@@ -236,12 +241,11 @@ const MainPage = (): JSX.Element => {
     }
   }, [apiUnreachable, navigate, user]);
 
-  // Dynamic tab title: "(N) #channel | Server" or "(N) @user | Windcord"
+  // Dynamic title plus native app badging where the browser supports it.
   useEffect(() => {
     const mentionUnread = Object.values(mentionUnreadByChannel).reduce((a, b) => a + b, 0);
     const dmUnread = Object.values(unreadDMs).reduce((a, b) => a + b, 0);
     const totalUnread = mentionUnread + dmUnread;
-    const prefix = totalUnread > 0 ? `(${totalUnread}) ` : "";
 
     let context = "Windcord";
     if (mode === "SERVER" && activeChannel) {
@@ -253,7 +257,21 @@ const MainPage = (): JSX.Element => {
       context = "Home | Windcord";
     }
 
-    document.title = `${prefix}${context}`;
+    const badgeNavigator = navigator as NavigatorWithBadge;
+    const supportsAppBadge = typeof badgeNavigator.setAppBadge === "function" || typeof badgeNavigator.clearAppBadge === "function";
+
+    document.title = `${supportsAppBadge || totalUnread === 0 ? "" : `(${totalUnread}) `}${context}`;
+
+    if (!supportsAppBadge) {
+      return;
+    }
+
+    if (totalUnread > 0) {
+      void badgeNavigator.setAppBadge?.(totalUnread).catch(() => undefined);
+      return;
+    }
+
+    void badgeNavigator.clearAppBadge?.().catch(() => undefined);
   }, [mode, activeChannel, activeServer, activeDMUser, mentionUnreadByChannel, unreadDMs]);
 
   useEffect(() => {
@@ -422,7 +440,7 @@ const MainPage = (): JSX.Element => {
   };
 
   return (
-    <main className="wc-shell flex h-screen w-screen text-discord-text">
+    <main className="wc-shell flex h-screen w-screen text-wind-text">
       <ServerBar
         servers={servers}
         homeActive={homeActive}
@@ -456,7 +474,7 @@ const MainPage = (): JSX.Element => {
               </button>
               {mode === "SERVER" && activeServer && (isServerOwner || memberPerms.banMembers) ? (
                 <button
-                  className="rounded-xl border border-transparent bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-discord-text transition hover:border-white/[0.04] hover:bg-white/[0.07]"
+                  className="rounded-xl border border-transparent bg-white/[0.04] px-2.5 py-1.5 text-xs font-medium text-wind-text transition hover:border-white/[0.04] hover:bg-white/[0.07]"
                   onClick={() => setServerSettingsOpen(true)}
                 >
                   <Shield size={12} className="mr-1 inline" />
@@ -550,17 +568,17 @@ const MainPage = (): JSX.Element => {
         </div>
 
         {mode === "SERVER" && !activeServer ? (
-          <div className="flex flex-1 items-center justify-center px-6 text-discord-muted">
+          <div className="flex flex-1 items-center justify-center px-6 text-wind-muted">
             <div className="wc-empty-state flex max-w-md flex-col items-center gap-3 rounded-3xl px-8 py-10 text-center">
               <p className="text-sm font-semibold text-white">Choose a server</p>
-              <p className="text-sm text-discord-muted">Select one from the rail or join a new space to start talking.</p>
+              <p className="text-sm text-wind-muted">Select one from the rail or join a new space to start talking.</p>
             </div>
           </div>
         ) : mode === "DM" && !activeDM ? (
-          <div className="flex flex-1 items-center justify-center px-6 text-discord-muted">
+          <div className="flex flex-1 items-center justify-center px-6 text-wind-muted">
             <div className="wc-empty-state flex max-w-md flex-col items-center gap-3 rounded-3xl px-8 py-10 text-center">
               <p className="text-sm font-semibold text-white">Pick a DM</p>
-              <p className="text-sm text-discord-muted">Open a direct message on the left to jump back into the conversation.</p>
+              <p className="text-sm text-wind-muted">Open a direct message on the left to jump back into the conversation.</p>
             </div>
           </div>
         ) : (
@@ -615,7 +633,7 @@ const MainPage = (): JSX.Element => {
       {commandOpen ? (
         <div className="fixed inset-0 z-40 grid place-items-start bg-black/40 pt-24" onClick={() => setCommandOpen(false)}>
           <div className="wc-modal-card w-full max-w-xl rounded-[22px] p-3" onClick={(e) => e.stopPropagation()}>
-            <div className="mb-3 flex items-center gap-2 rounded-2xl border border-white/[0.04] bg-black/20 px-3 py-2 text-sm text-discord-muted backdrop-blur-xl">
+            <div className="mb-3 flex items-center gap-2 rounded-2xl border border-white/[0.04] bg-black/20 px-3 py-2 text-sm text-wind-muted backdrop-blur-xl">
               <Search size={14} />
               Quick switcher (Ctrl+K)
             </div>

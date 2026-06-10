@@ -101,7 +101,7 @@ const UserBar = ({ user, onOpenSettings, onOpenOwnProfile, onSetNickColor }: Pro
         title="Set status"
       >
         <p className="truncate text-xs font-semibold text-white leading-4">{displayName}</p>
-        <div className="flex w-full items-center gap-1 text-[11px] text-discord-muted">
+        <div className="flex w-full items-center gap-1 text-[11px] text-wind-muted">
           <span className="truncate flex-1">{user.customStatus?.trim() || formatStatusLabel(user.status)}</span>
           <ChevronUp
             size={12}
@@ -117,13 +117,13 @@ const UserBar = ({ user, onOpenSettings, onOpenOwnProfile, onSetNickColor }: Pro
           ref={menuRef}
           className="wc-popover absolute bottom-[62px] left-2 z-50 w-56 overflow-hidden rounded-2xl py-1.5"
         >
-          <p className="px-3 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wider text-discord-muted">Set Status</p>
+          <p className="px-3 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wider text-wind-muted">Set Status</p>
           {STATUS_OPTIONS.map(({ value, label }) => {
             const active = user.status === value;
             return (
               <button
                 key={value}
-                className={`flex w-full items-center gap-3 px-3 py-2 text-sm transition hover:bg-white/[0.06] ${active ? "text-white" : "text-discord-text"}`}
+                className={`flex w-full items-center gap-3 px-3 py-2 text-sm transition hover:bg-white/[0.06] ${active ? "text-white" : "text-wind-text"}`}
                 onClick={() => void handleStatusSelect(value)}
               >
                 <StatusDot status={value} sizeClassName="h-3.5 w-3.5" cutoutClassName="ring-0" cutoutColor="#36393f" />
@@ -137,7 +137,7 @@ const UserBar = ({ user, onOpenSettings, onOpenOwnProfile, onSetNickColor }: Pro
 
       {onSetNickColor ? (
         <button
-          className="shrink-0 rounded-xl p-2 text-discord-muted transition hover:bg-white/[0.06] hover:text-white"
+          className="shrink-0 rounded-xl p-2 text-wind-muted transition hover:bg-white/[0.06] hover:text-white"
           onClick={onSetNickColor}
           title="Set nickname color"
         >
@@ -145,7 +145,7 @@ const UserBar = ({ user, onOpenSettings, onOpenOwnProfile, onSetNickColor }: Pro
         </button>
       ) : null}
 
-      <button className="shrink-0 rounded-xl p-2 text-discord-muted transition hover:bg-white/[0.06] hover:text-white" onClick={onOpenSettings}>
+      <button className="shrink-0 rounded-xl p-2 text-wind-muted transition hover:bg-white/[0.06] hover:text-white" onClick={onOpenSettings}>
         <Settings size={16} />
       </button>
     </div>

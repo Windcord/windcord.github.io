@@ -132,6 +132,7 @@ export type LinkEmbed = {
   resolvedUrl: string;
   providerHost: string;
   siteName?: string | null;
+  authorName?: string | null;
   title?: string | null;
   description?: string | null;
   imageUrl?: string | null;

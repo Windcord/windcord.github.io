@@ -246,7 +246,7 @@ const AvatarCropModal = ({
           >
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-lg font-semibold text-white">{title}</h3>
-          <button className="text-sm text-discord-muted hover:text-white" onClick={onClose} aria-label="Close">
+          <button className="text-sm text-wind-muted hover:text-white" onClick={onClose} aria-label="Close">
             x
           </button>
         </div>
@@ -266,7 +266,7 @@ const AvatarCropModal = ({
         </div>
 
         <div className="mt-4 flex items-center gap-3">
-          <span className="text-xs text-discord-muted">Zoom</span>
+          <span className="text-xs text-wind-muted">Zoom</span>
           <input
             type="range"
             min={1}
@@ -279,11 +279,11 @@ const AvatarCropModal = ({
         </div>
 
         <div className="mt-4 flex items-center justify-between">
-          <button type="button" className="text-sm text-discord-muted hover:text-white" onClick={reset}>
+          <button type="button" className="text-sm text-wind-muted hover:text-white" onClick={reset}>
             Reset
           </button>
           <div className="flex gap-2">
-            <button type="button" className="rounded-xl bg-white/[0.06] px-4 py-1.5 text-sm font-semibold text-discord-muted hover:bg-white/[0.08] hover:text-white" onClick={onClose}>
+            <button type="button" className="rounded-xl bg-white/[0.06] px-4 py-1.5 text-sm font-semibold text-wind-muted hover:bg-white/[0.08] hover:text-white" onClick={onClose}>
               Cancel
             </button>
             <button
