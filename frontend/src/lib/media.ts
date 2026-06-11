@@ -1,4 +1,5 @@
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "/api";
+import { getApiBaseUrl } from "./runtimeConfig";
+
 const DEFAULT_AVATAR_URL = `${import.meta.env.BASE_URL}default-avatar.svg`;
 const DELETED_AVATAR_URL = `${import.meta.env.BASE_URL}deleted-avatar.svg`;
 
@@ -8,6 +9,8 @@ type AvatarLike = {
 };
 
 const getBackendOrigin = (): string => {
+  const apiBaseUrl = getApiBaseUrl();
+
   if (typeof window === "undefined") {
     try {
       return new URL(apiBaseUrl, "http://localhost").origin;
@@ -32,9 +35,10 @@ export const resolveMediaUrl = (value?: string | null): string | null | undefine
     return value;
   }
 
-  if (value.startsWith("/uploads/")) {
+  if (value.startsWith("/uploads/") || value.startsWith("uploads/")) {
     const origin = getBackendOrigin();
-    return origin ? `${origin}${value}` : value;
+    const normalizedPath = value.startsWith("/") ? value : `/${value}`;
+    return origin ? `${origin}${normalizedPath}` : normalizedPath;
   }
 
   return value;

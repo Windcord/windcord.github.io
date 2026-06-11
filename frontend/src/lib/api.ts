@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useSystemStore } from "./stores/systemStore";
+import { getApiBaseUrl } from "./runtimeConfig";
 
-const apiBaseUrl = import.meta.env.VITE_API_BASE_URL ?? "/api";
+const apiBaseUrl = getApiBaseUrl();
 const API_OUTAGE_SIMULATION_KEY = "windcord_simulate_api_down";
 
 const isApiOutageSimulated = (): boolean => {

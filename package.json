@@ -2,17 +2,37 @@
   "name": "windcord",
   "version": "2.0.0",
   "private": true,
+  "main": "electron/main.cjs",
   "scripts": {
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:desktop": "concurrently \"npm --prefix frontend run dev\" \"wait-on tcp:5173 && cross-env ELECTRON_START_URL=http://localhost:5173 electron .\"",
     "admin": "npm --prefix local-admin start",
     "dev:backend": "npm --prefix backend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
-    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install"
+    "install:all": "npm install && npm --prefix backend install && npm --prefix frontend install",
+    "build:desktop": "cross-env VITE_BASE_PATH=./ npm --prefix frontend run build && electron-builder"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^42.4.0",
+    "electron-builder": "^26.15.2",
+    "wait-on": "^8.0.3"
+  },
+  "build": {
+    "appId": "io.windcord.desktop",
+    "productName": "Windcord",
+    "files": [
+      "electron/**/*",
+      "frontend/dist/**/*"
+    ],
+    "directories": {
+      "buildResources": "electron/build"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    }
   }
 }
-
-
-

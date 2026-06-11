@@ -1,7 +1,8 @@
 import { io, type Socket } from "socket.io-client";
+import { getSocketUrl } from "./runtimeConfig";
 
 let socket: Socket | null = null;
-const socketUrl = import.meta.env.VITE_SOCKET_URL ?? "http://localhost:4000";
+const socketUrl = getSocketUrl();
 
 export const getSocket = (): Socket | null => socket;
 
