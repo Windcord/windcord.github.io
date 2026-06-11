@@ -13,6 +13,11 @@ type WindcordDesktopBridge = {
 		releaseUrl: string;
 		error?: string;
 	}>;
+	getDesktopInfo?: () => Promise<{
+		desktopVersion: string;
+		electronVersion: string;
+		backendVersion: string;
+	}>;
 	openReleasePage?: (url?: string) => Promise<void>;
 	downloadAndInstallUpdate?: () => Promise<{
 		ok: boolean;

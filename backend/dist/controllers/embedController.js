@@ -6,8 +6,6 @@ const node_net_1 = require("node:net");
 const cheerio_1 = require("cheerio");
 const EMBED_CACHE_TTL_MS = 1000 * 60 * 30;
 const MAX_HTML_BYTES = 1024 * 1024;
-const EMBED_CACHE_VERSION = "v2";
-const YOUTUBE_EMBED_COLOR = "#ff3b30";
 const embedCache = new Map();
 const isPrivateIpv4 = (ip) => {
     const parts = ip.split(".").map(Number);
@@ -50,13 +48,6 @@ const isBlockedHostname = (hostname) => {
 const normalizeText = (value) => {
     const trimmed = value?.replace(/\s+/g, " ").trim();
     return trimmed ? trimmed : null;
-};
-const normalizeUnknownText = (value) => {
-    return typeof value === "string" ? normalizeText(value) : null;
-};
-const isYouTubeUrl = (targetUrl) => {
-    const host = targetUrl.hostname.toLowerCase().replace(/^www\./, "");
-    return host === "youtube.com" || host === "m.youtube.com" || host === "music.youtube.com" || host === "youtu.be";
 };
 const getMetaContent = ($, keys) => {
     for (const key of keys) {
@@ -146,33 +137,6 @@ const assertPublicUrl = async (targetUrl) => {
 const fetchEmbedPreview = async (targetUrl) => {
     const parsedUrl = new URL(targetUrl);
     await assertPublicUrl(parsedUrl);
-    if (isYouTubeUrl(parsedUrl)) {
-        const oEmbedUrl = new URL("https://www.youtube.com/oembed");
-        oEmbedUrl.searchParams.set("url", parsedUrl.toString());
-        oEmbedUrl.searchParams.set("format", "json");
-        const oEmbedResponse = await fetch(oEmbedUrl, {
-            headers: {
-                accept: "application/json",
-                "user-agent": "WindcordBot/1.0 (+https://windcord.github.io)"
-            },
-            signal: AbortSignal.timeout(8000)
-        });
-        if (oEmbedResponse.ok) {
-            const payload = (await oEmbedResponse.json());
-            return {
-                url: parsedUrl.toString(),
-                resolvedUrl: parsedUrl.toString(),
-                providerHost: "youtube.com",
-                siteName: normalizeUnknownText(payload.provider_name) ?? "YouTube",
-                authorName: normalizeUnknownText(payload.author_name),
-                title: normalizeUnknownText(payload.title),
-                description: null,
-                imageUrl: resolveMaybeRelativeUrl(normalizeUnknownText(payload.thumbnail_url), parsedUrl.toString()),
-                faviconUrl: "https://www.youtube.com/favicon.ico",
-                color: YOUTUBE_EMBED_COLOR
-            };
-        }
-    }
     const response = await fetch(parsedUrl, {
         headers: {
             accept: "text/html,application/xhtml+xml",
@@ -221,7 +185,6 @@ const fetchEmbedPreview = async (targetUrl) => {
         resolvedUrl,
         providerHost: new URL(resolvedUrl).hostname.replace(/^www\./i, ""),
         siteName,
-        authorName: null,
         title,
         description,
         imageUrl,
@@ -243,7 +206,7 @@ const previewEmbed = async (req, res) => {
         res.status(400).json({ message: "Invalid URL" });
         return;
     }
-    const cacheKey = `${EMBED_CACHE_VERSION}:${parsedUrl.toString()}`;
+    const cacheKey = parsedUrl.toString();
     const cached = embedCache.get(cacheKey);
     if (cached && cached.expiresAt > Date.now()) {
         res.json({ embed: cached.value });

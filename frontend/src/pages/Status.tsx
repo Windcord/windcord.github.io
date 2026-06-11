@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { api } from "../lib/api";
@@ -13,12 +13,7 @@ const StatusPage = (): JSX.Element => {
   const setApiUnreachable = useSystemStore((s) => s.setApiUnreachable);
   const [checking, setChecking] = useState(false);
   const [lastError, setLastError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (user && !apiUnreachable) {
-      navigate("/", { replace: true });
-    }
-  }, [apiUnreachable, navigate, user]);
+  const successStreakRef = useRef(0);
 
   useEffect(() => {
     if (!user) {
@@ -29,10 +24,17 @@ const StatusPage = (): JSX.Element => {
       void api
         .get("/health")
         .then(async () => {
+          successStreakRef.current += 1;
+          if (successStreakRef.current < 2) {
+            return;
+          }
+
           setApiUnreachable(false);
           await restoreSession();
+          navigate("/", { replace: true });
         })
         .catch(() => {
+          successStreakRef.current = 0;
           setApiUnreachable(true);
         });
     }, 5000);
@@ -51,10 +53,12 @@ const StatusPage = (): JSX.Element => {
     setLastError(null);
     try {
       await api.get("/health");
+      successStreakRef.current = 2;
       setApiUnreachable(false);
       await restoreSession();
       navigate("/", { replace: true });
     } catch {
+      successStreakRef.current = 0;
       setApiUnreachable(true);
       setLastError("Windcord still cannot reach the API server.");
     } finally {

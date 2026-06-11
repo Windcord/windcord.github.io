@@ -2916,7 +2916,7 @@ const ChatArea = ({
         </div>
       ) : null}
       <header className="wc-chat-header flex h-14 items-center justify-between px-5 text-sm font-semibold shadow-sm">
-        <span>
+        <span className="min-w-0 truncate">
           {mode === "SERVER" ? "#" : "@"} {channelName || "select-channel"}
         </span>
       </header>

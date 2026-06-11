@@ -19,6 +19,10 @@ export const isDesktopApp = (): boolean => {
   return Boolean(readDesktopBridge()?.isDesktop);
 };
 
+export const getFrontendVersion = (): string => {
+  return import.meta.env.VITE_FRONTEND_VERSION ?? "unknown";
+};
+
 export const getApiBaseUrl = (): string => {
   const bridge = readDesktopBridge();
   const desktopUrl = bridge?.apiBaseUrl?.trim();

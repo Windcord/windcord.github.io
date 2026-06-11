@@ -192,7 +192,10 @@ const ServerBar = ({
                   {hoverTooltip.onlineCount.toLocaleString()}
                 </span>
                 <span className="inline-flex items-center gap-1.5 text-[#9ca0aa]">
-                  <span className="h-3 w-3 rounded-full border-2 border-[#9ca0aa]" />
+                  <span
+                    className="h-3.5 w-3.5 rounded-full border-[3.85px] border-[#9ca0aa]"
+                    aria-hidden="true"
+                  />
                   {hoverTooltip.offlineCount.toLocaleString()}
                 </span>
               </div>

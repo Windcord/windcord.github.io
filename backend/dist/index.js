@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
+const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const node_http_1 = __importDefault(require("node:http"));
 const express_1 = __importDefault(require("express"));
@@ -21,6 +22,16 @@ const sockets_1 = require("./sockets");
 const app = (0, express_1.default)();
 const server = node_http_1.default.createServer(app);
 const io = (0, sockets_1.initSocket)(server);
+const backendVersion = (() => {
+    try {
+        const packageJsonPath = node_path_1.default.resolve(__dirname, "..", "package.json");
+        const packageJson = JSON.parse(node_fs_1.default.readFileSync(packageJsonPath, "utf8"));
+        return packageJson.version ?? "unknown";
+    }
+    catch {
+        return "unknown";
+    }
+})();
 const normalizeOrigin = (value) => {
     try {
         return new URL(value).origin;
@@ -66,9 +77,16 @@ app.get("/uploads/attachments/:fileName", (req, res, next) => {
     next();
 });
 app.use("/uploads", express_1.default.static(node_path_1.default.resolve(process.cwd(), "uploads"), { maxAge: "7d" }));
-app.get("/health", (_req, res) => {
-    res.json({ ok: true, service: "windcord-backend" });
-});
+const healthHandler = (_req, res) => {
+    res.json({ ok: true, service: "windcord-backend", version: backendVersion });
+};
+const versionHandler = (_req, res) => {
+    res.json({ version: backendVersion });
+};
+app.get("/health", healthHandler);
+app.get("/api/health", healthHandler);
+app.get("/version", versionHandler);
+app.get("/api/version", versionHandler);
 app.use("/api/auth", authRoutes_1.default);
 app.use("/api/admin", adminRoutes_1.default);
 app.use("/api/servers", serverRoutes_1.default);

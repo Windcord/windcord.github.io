@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Pencil, Pipette } from "lucide-react";
 import { api } from "../lib/api";
+import { getFrontendVersion, isDesktopApp } from "../lib/runtimeConfig";
 import { useBackdropClose } from "../lib/useBackdropClose";
 import { useAuthStore } from "../lib/stores/authStore";
 import { getNotifSoundPref, setNotifSoundPref } from "../lib/stores/chatStore";
@@ -14,10 +15,9 @@ import {
   setThemePreference,
   type WindcordThemeName
 } from "../lib/theme";
-import type { UserStatus } from "../types";
 import AvatarCropModal from "./AvatarCropModal";
 
-type Tab = "profile" | "appearance" | "account" | "security";
+type Tab = "profile" | "appearance" | "account" | "about";
 
 type Props = {
   open: boolean;
@@ -29,11 +29,11 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
   const setUser = useAuthStore((s) => s.setUser);
   const logout = useAuthStore((s) => s.logout);
   const regenerateRecoveryCode = useAuthStore((s) => s.regenerateRecoveryCode);
+  const desktopApp = isDesktopApp();
 
   const [tab, setTab] = useState<Tab>("profile");
   const [username, setUsername] = useState(user?.username ?? "");
   const [nickname, setNickname] = useState(user?.nickname ?? "");
-  const [status, setStatus] = useState<UserStatus>((user?.status as UserStatus) ?? "ONLINE");
   const [aboutMe, setAboutMe] = useState(user?.aboutMe ?? "");
   const [customStatus, setCustomStatus] = useState(user?.customStatus ?? "");
   const [bannerColor, setBannerColor] = useState(() => user?.bannerColor ?? getThemeAccentHex(getStoredThemePreference()));
@@ -58,10 +58,16 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
   const [bannerEditorSrc, setBannerEditorSrc] = useState<string | null>(null);
   const [bannerEditorFile, setBannerEditorFile] = useState<File | null>(null);
   const [bannerPreviewUrl, setBannerPreviewUrl] = useState<string | null>(null);
+  const [desktopVersion, setDesktopVersion] = useState("unknown");
+  const [backendVersion, setBackendVersion] = useState("unknown");
+  const [desktopUpdateStatus, setDesktopUpdateStatus] = useState<string | null>(null);
+  const [checkingForUpdates, setCheckingForUpdates] = useState(false);
   const colorInputRef = useRef<HTMLInputElement>(null);
   const avatarFileInputRef = useRef<HTMLInputElement>(null);
   const bannerFileInputRef = useRef<HTMLInputElement>(null);
   const { onBackdropPointerDown, onBackdropClick } = useBackdropClose(onClose);
+  const frontendVersion = getFrontendVersion();
+  const accountCreatedAt = user?.createdAt ? new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(new Date(user.createdAt)) : null;
 
   const hasEyeDropper = typeof window !== "undefined" && "EyeDropper" in window;
 
@@ -82,7 +88,6 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
   useEffect(() => {
     setUsername(user?.username ?? "");
     setNickname(user?.nickname ?? "");
-    setStatus((user?.status as UserStatus) ?? "ONLINE");
     setAboutMe(user?.aboutMe ?? "");
     setCustomStatus(user?.customStatus ?? "");
     setBannerColor(user?.bannerColor ?? getThemeAccentHex(getStoredThemePreference()));
@@ -106,13 +111,41 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
     setTheme(getStoredThemePreference());
   }, [open]);
 
+  useEffect(() => {
+    if (!open || !desktopApp) {
+      return;
+    }
+
+    let cancelled = false;
+    setDesktopVersion("Loading...");
+    setBackendVersion("Loading...");
+    setDesktopUpdateStatus(null);
+
+    void window.windcordDesktop?.getDesktopInfo?.()
+      .then((info) => {
+        if (!cancelled) {
+          setDesktopVersion(info?.desktopVersion || "unknown");
+          setBackendVersion(info?.backendVersion || "Unavailable");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setDesktopVersion("unknown");
+          setBackendVersion("Unavailable");
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [desktopApp, open]);
+
   const onSubmit = async (event: FormEvent): Promise<void> => {
     event.preventDefault();
     setSaved(false);
     const formData = new FormData();
     formData.append("username", username);
     formData.append("nickname", nickname);
-    formData.append("status", status);
     formData.append("aboutMe", aboutMe);
     formData.append("customStatus", customStatus);
     formData.append("bannerColor", bannerColor);
@@ -187,6 +220,37 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
     } finally { setRecoveryBusy(false); }
   };
 
+  const onCheckForUpdates = async (): Promise<void> => {
+    if (!desktopApp) {
+      return;
+    }
+
+    try {
+      setCheckingForUpdates(true);
+      setDesktopUpdateStatus(null);
+      const result = await window.windcordDesktop?.checkForUpdates?.();
+      if (!result) {
+        setDesktopUpdateStatus("Update checks are unavailable.");
+        return;
+      }
+
+      if (result.error) {
+        setDesktopUpdateStatus(result.error);
+        return;
+      }
+
+      setDesktopUpdateStatus(
+        result.updateAvailable
+          ? `Update available: ${result.latestVersion}`
+          : `Windcord is up to date (${result.localVersion}).`
+      );
+    } catch (error) {
+      setDesktopUpdateStatus(error instanceof Error ? error.message : "Could not check for updates.");
+    } finally {
+      setCheckingForUpdates(false);
+    }
+  };
+
   const pickColorWithEyeDropper = async (target: "banner" | "accent" = "banner"): Promise<void> => {
     try {
       // @ts-expect-error EyeDropper is not in TS lib yet
@@ -210,7 +274,7 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
     { id: "profile", label: "My Profile" },
     { id: "appearance", label: "Appearance" },
     { id: "account", label: "Account" },
-    { id: "security", label: "Security" },
+    { id: "about", label: "About" },
   ];
 
   return (
@@ -230,11 +294,10 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
               initial={{ opacity: 0, y: 14, scale: 0.97 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 14, scale: 0.97 }}
-              transition={{ duration: 0.22, ease: "easeOut" }}
-              className="wc-modal-card flex w-full max-w-[58rem] overflow-hidden rounded-[26px]"
-              style={{ maxHeight: "calc(100vh - 2rem)" }}
-              onClick={(e) => e.stopPropagation()}
-            >
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="wc-modal-card flex h-[min(46rem,calc(100vh-2rem))] w-full max-w-[58rem] overflow-hidden rounded-[26px]"
+            onClick={(e) => e.stopPropagation()}
+          >
               {/* Sidebar */}
               <div className="w-48 shrink-0 border-r border-white/[0.04] p-3.5" style={{ background: "var(--wc-settings-sidebar-bg)" }}>
                 <p className="mb-1 px-2 pt-1 text-[11px] font-semibold uppercase tracking-wider text-wind-muted">User Settings</p>
@@ -510,39 +573,53 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                   <>
                     <h2 className="mb-4 text-lg font-semibold">Account</h2>
 
-                    <label className="mb-3 block text-xs text-wind-muted">
-                      Username
-                      <input
-                        className="wc-input-surface mt-1 w-full rounded-xl px-3 py-2 text-sm text-white"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        pattern="[A-Za-z0-9]{2,32}"
-                        maxLength={32}
-                      />
-                      <span className="mt-1 block text-[11px]">Letters and numbers only, no spaces.</span>
-                    </label>
+                    <div className="mb-4 rounded-2xl border border-white/[0.06] bg-black/20 p-4 backdrop-blur-sm">
+                      <div className="flex items-start justify-between gap-4 border-b border-white/[0.04] pb-3">
+                        <div>
+                          <h3 className="text-sm font-semibold text-white">Account Details</h3>
+                          <p className="mt-1 text-xs leading-5 text-wind-muted">Identity and login information for your profile.</p>
+                        </div>
+                        <span className="rounded-full border border-white/[0.06] bg-white/[0.04] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-wind-muted">
+                          {user.status}
+                        </span>
+                      </div>
 
-                    <label className="mb-3 block text-xs text-wind-muted">
-                      Status
-                      <select
-                        className="wc-input-surface mt-1 w-full rounded-xl px-3 py-2 text-sm text-white"
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value as UserStatus)}
-                      >
-                        <option value="ONLINE">Online</option>
-                        <option value="IDLE">Idle</option>
-                        <option value="DND">Do Not Disturb</option>
-                        <option value="INVISIBLE">Invisible</option>
-                      </select>
-                    </label>
+                      <div className="mt-3 space-y-3">
+                        <label className="block text-xs text-wind-muted">
+                          Username
+                          <input
+                            className="wc-input-surface mt-1 w-full rounded-xl px-3 py-2 text-sm text-white"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            pattern="[A-Za-z0-9]{2,32}"
+                            maxLength={32}
+                          />
+                          <span className="mt-1 block text-[11px]">Letters and numbers only, no spaces.</span>
+                        </label>
 
-                  </>
-                )}
+                        <label className="block text-xs text-wind-muted">
+                          Display Name
+                          <input
+                            className="wc-input-surface mt-1 w-full rounded-xl px-3 py-2 text-sm text-white"
+                            value={nickname}
+                            onChange={(e) => setNickname(e.target.value)}
+                            maxLength={32}
+                            placeholder="Shown to other people"
+                          />
+                        </label>
 
-                {/* SECURITY */}
-                {tab === "security" && (
-                  <>
-                    <h2 className="mb-4 text-lg font-semibold">Security</h2>
+                        <div className="grid gap-2 md:grid-cols-2">
+                          <div className="rounded-xl border border-white/[0.04] bg-white/[0.03] px-3 py-2">
+                            <p className="text-[11px] uppercase tracking-wide text-wind-muted">Status</p>
+                            <p className="mt-1 text-sm text-white">{user.status}</p>
+                          </div>
+                          <div className="rounded-xl border border-white/[0.04] bg-white/[0.03] px-3 py-2">
+                            <p className="text-[11px] uppercase tracking-wide text-wind-muted">Member Since</p>
+                            <p className="mt-1 text-sm text-white">{accountCreatedAt ?? "Unknown"}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
 
                     <div className="mb-4 rounded-2xl border border-white/[0.06] bg-black/20 p-4 backdrop-blur-sm">
                       <h3 className="text-sm font-semibold text-white">Recovery Key</h3>
@@ -601,6 +678,54 @@ const SettingsModal = ({ open, onClose }: Props): JSX.Element | null => {
                           </div>
                         )}
                       </div>
+                    </div>
+                  </>
+                )}
+
+                {/* ABOUT */}
+                {tab === "about" && (
+                  <>
+                    <h2 className="mb-4 text-lg font-semibold">About Windcord</h2>
+
+                    <div className="rounded-2xl border border-white/[0.06] bg-black/20 p-4 backdrop-blur-sm">
+                      <div className="flex items-center justify-between gap-3 border-b border-white/[0.04] pb-3">
+                        <div>
+                          <h3 className="text-sm font-semibold text-white">Version Info</h3>
+                          <p className="mt-0.5 text-xs text-wind-muted">Current build details for this app.</p>
+                        </div>
+                        <span className="rounded-full border border-white/[0.06] bg-white/[0.04] px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-wind-muted">
+                          {desktopApp ? "Desktop" : "Web"}
+                        </span>
+                      </div>
+
+                      <div className="mt-3 space-y-1.5">
+                        <div className="flex items-center justify-between gap-4 text-sm">
+                          <span className="text-wind-muted">Desktop</span>
+                          <span className="font-mono text-white">{desktopApp ? desktopVersion : "N/A"}</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-4 text-sm">
+                          <span className="text-wind-muted">Frontend</span>
+                          <span className="font-mono text-white">{frontendVersion}</span>
+                        </div>
+                        <div className="flex items-center justify-between gap-4 text-sm">
+                          <span className="text-wind-muted">Backend</span>
+                          <span className="font-mono text-white">{desktopApp ? backendVersion : "N/A"}</span>
+                        </div>
+                      </div>
+
+                      {desktopApp ? (
+                        <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/[0.04] pt-3">
+                          <button
+                            type="button"
+                            onClick={() => void onCheckForUpdates()}
+                            disabled={checkingForUpdates}
+                            className="rounded-lg bg-white/[0.08] px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/[0.12] disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            {checkingForUpdates ? "Checking..." : "Check for Updates"}
+                          </button>
+                          {desktopUpdateStatus ? <p className="max-w-[60%] text-right text-xs text-wind-muted">{desktopUpdateStatus}</p> : null}
+                        </div>
+                      ) : null}
                     </div>
                   </>
                 )}

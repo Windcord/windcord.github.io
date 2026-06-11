@@ -1,4 +1,5 @@
 import "dotenv/config";
+import fs from "node:fs";
 import path from "node:path";
 import http from "node:http";
 import express from "express";
@@ -17,6 +18,15 @@ import { initSocket } from "./sockets";
 const app = express();
 const server = http.createServer(app);
 const io = initSocket(server);
+const backendVersion = (() => {
+  try {
+    const packageJsonPath = path.resolve(__dirname, "..", "package.json");
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8")) as { version?: string };
+    return packageJson.version ?? "unknown";
+  } catch {
+    return "unknown";
+  }
+})();
 
 const normalizeOrigin = (value: string): string => {
   try {
@@ -75,9 +85,18 @@ app.get("/uploads/attachments/:fileName", (req, res, next) => {
 
 app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads"), { maxAge: "7d" }));
 
-app.get("/health", (_req, res) => {
-  res.json({ ok: true, service: "windcord-backend" });
-});
+const healthHandler = (_req: express.Request, res: express.Response): void => {
+  res.json({ ok: true, service: "windcord-backend", version: backendVersion });
+};
+
+const versionHandler = (_req: express.Request, res: express.Response): void => {
+  res.json({ version: backendVersion });
+};
+
+app.get("/health", healthHandler);
+app.get("/api/health", healthHandler);
+app.get("/version", versionHandler);
+app.get("/api/version", versionHandler);
 
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Shield, UserPlus } from "lucide-react";
+import { Search, Shield, UserPlus, Users } from "lucide-react";
 import ServerBar from "../components/ServerBar";
 import ChannelList from "../components/ChannelList";
 import ChatArea from "../components/ChatArea";
@@ -36,6 +36,7 @@ const MainPage = (): JSX.Element => {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const apiUnreachable = useSystemStore((s) => s.apiUnreachable);
+  const setApiUnreachable = useSystemStore((s) => s.setApiUnreachable);
 
   const {
     servers,
@@ -90,6 +91,7 @@ const MainPage = (): JSX.Element => {
   const [createChannelOpen, setCreateChannelOpen] = useState(false);
   const [serverSettingsOpen, setServerSettingsOpen] = useState(false);
   const [friendsOpen, setFriendsOpen] = useState(false);
+  const [membersOpen, setMembersOpen] = useState(true);
   const [profileUser, setProfileUser] = useState<User | null>(null);
   const [commandOpen, setCommandOpen] = useState(false);
   const [searchPanelOpen, setSearchPanelOpen] = useState(false);
@@ -218,12 +220,41 @@ const MainPage = (): JSX.Element => {
     return counts;
   }, [servers, mentionUnreadByChannel]);
 
+  const isLikelyApiOutage = (error: unknown): boolean => {
+    const hasResponse = Boolean((error as { response?: unknown })?.response);
+    if (!hasResponse) {
+      return true;
+    }
+
+    const status = (error as { response?: { status?: number } })?.response?.status;
+    if (typeof status === "number" && status >= 500) {
+      return true;
+    }
+
+    const message = String((error as { message?: string })?.message ?? "").toLowerCase();
+    return (
+      message.includes("network error") ||
+      message.includes("econnrefused") ||
+      message.includes("connection refused") ||
+      message.includes("err_network") ||
+      message.includes("timed out") ||
+      message.includes("timeout") ||
+      message.includes("unreachable")
+    );
+  };
+
   useEffect(() => {
     void (async () => {
-      await Promise.all([loadServers(), loadFriends(), loadDMs(), loadNotices()]);
-      void refreshOfflineUnreads();
+      try {
+        await Promise.all([loadServers(), loadFriends(), loadDMs(), loadNotices()]);
+        void refreshOfflineUnreads();
+      } catch (error) {
+        if (isLikelyApiOutage(error)) {
+          setApiUnreachable(true);
+        }
+      }
     })();
-  }, [loadServers, loadFriends, loadDMs, loadNotices, refreshOfflineUnreads]);
+  }, [loadServers, loadFriends, loadDMs, loadNotices, refreshOfflineUnreads, setApiUnreachable]);
 
   useEffect(() => {
     bindSocketEvents(user);
@@ -440,7 +471,7 @@ const MainPage = (): JSX.Element => {
   };
 
   return (
-    <main className="wc-shell flex h-screen w-screen text-wind-text">
+    <main className="wc-shell relative flex h-screen w-screen text-wind-text">
       <ServerBar
         servers={servers}
         homeActive={homeActive}
@@ -458,6 +489,18 @@ const MainPage = (): JSX.Element => {
         onJoinByInvite={() => void joinViaInvite()}
         onLogout={() => void logout()}
       />
+
+      {mode === "SERVER" ? (
+        <button
+          type="button"
+          onClick={() => setMembersOpen((value) => !value)}
+          className={`fixed right-[15.75rem] top-[0.875rem] z-30 hidden h-8 w-8 place-items-center rounded-lg border transition xl:grid ${membersOpen ? "border-white/[0.06] bg-white/[0.08] text-white hover:bg-white/[0.12]" : "border-white/[0.04] bg-white/[0.04] text-wind-muted hover:bg-white/[0.08] hover:text-white"}`}
+          title={membersOpen ? "Hide members" : "Show members"}
+          aria-label={membersOpen ? "Hide members" : "Show members"}
+        >
+          <Users size={14} />
+        </button>
+      ) : null}
 
       <div className="flex min-w-0 flex-1">
         <div className="wc-sidebar flex h-full w-60 flex-col">
@@ -614,7 +657,9 @@ const MainPage = (): JSX.Element => {
             servers={servers}
             topSlot={mode === "DM" && activeDMId ? <MessageSearchModal scope="dm" targetId={activeDMId} conversationLabel={activeDMUser?.nickname?.trim() || activeDMUser?.username || activeDMName} onJumpToMessage={openDMMessage} onOpenChange={setSearchPanelOpen} /> : null}
           />
-        ) : (
+        ) : null}
+
+        {mode === "SERVER" && membersOpen ? (
           <MemberList
             members={activeServer?.members ?? []}
             onSelectUser={setProfileUser}
@@ -627,7 +672,7 @@ const MainPage = (): JSX.Element => {
             expanded={mode === "SERVER" && searchPanelOpen}
             topSlot={mode === "SERVER" && activeServerId ? <MessageSearchModal scope="server" targetId={activeServerId} members={activeServer?.members ?? []} onJumpToMessage={openChannelMessage} onOpenChange={setSearchPanelOpen} /> : null}
           />
-        )}
+        ) : null}
       </div>
 
       {commandOpen ? (
