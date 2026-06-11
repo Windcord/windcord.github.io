@@ -227,7 +227,7 @@
 
 /* ===== NEW THEMES BELOW ===== */
 
-/* Classic Discord - Flat solid colors, no gradients, soft muted accents matching original Discord UI */
+/* Classic theme - Flat solid colors, no gradients, soft muted accents matching the original UI */
 :root[data-windcord-theme="classic"] {
   --wc-bg-top: #2e3035;
   --wc-bg-bottom: #2e3035;
@@ -730,23 +730,23 @@ html {
   border-radius: 0.5rem;
 }
 
-.discord-scrollbar::-webkit-scrollbar {
+.wind-scrollbar::-webkit-scrollbar {
   width: 10px;
 }
 
-.discord-scrollbar::-webkit-scrollbar-thumb {
+.wind-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
-.discord-scrollbar::-webkit-scrollbar-thumb:hover {
+.wind-scrollbar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.18);
   background-clip: padding-box;
 }
 
-.discord-scrollbar::-webkit-scrollbar-track {
+.wind-scrollbar::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.15);
   border-radius: 8px;
   margin: 4px;
@@ -905,7 +905,7 @@ html {
   border-radius: 4px;
 }
 
-.discord-inline-emoji {
+.wind-inline-emoji {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -916,7 +916,7 @@ html {
   user-select: none;
 }
 
-.discord-inline-emoji > img {
+.wind-inline-emoji > img {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -944,7 +944,7 @@ html {
   50%       { opacity: 0; }
 }
 
-.discord-jumbo-emoji-row {
+.wind-jumbo-emoji-row {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 0.35rem;
@@ -954,7 +954,7 @@ html {
 }
 
 /* Emoji picker outer container - solid opaque background, no blur, proper rounding */
-.discord-emoji-picker {
+.wind-emoji-picker {
   border: none !important;
   border-radius: 22px !important;
   background: var(--wc-emoji-bg) !important;
@@ -964,12 +964,12 @@ html {
 }
 
 /* Override wc-modal-card backdrop blur for emoji picker */
-.wc-modal-card.discord-emoji-picker {
+.wc-modal-card.wind-emoji-picker {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
 
-.discord-emoji-picker.EmojiPickerReact {
+.wind-emoji-picker.EmojiPickerReact {
   --epr-bg-color: var(--wc-emoji-bg) !important;
   --epr-picker-border-color: transparent !important;
   --epr-hover-bg-color: var(--wc-emoji-hover) !important;
@@ -995,11 +995,11 @@ html {
   --epr-emoji-padding: 7px;
 }
 
-.discord-emoji-picker .epr-header {
+.wind-emoji-picker .epr-header {
   padding-bottom: 8px !important;
 }
 
-.discord-emoji-picker .epr-search-container input {
+.wind-emoji-picker .epr-search-container input {
   font-size: 14px !important;
   background-color: rgba(0, 0, 0, 0.22) !important;
   border: 1px solid rgba(255, 255, 255, 0.06) !important;
@@ -1007,35 +1007,35 @@ html {
   color: #f2f3f5 !important;
 }
 
-.discord-emoji-picker .epr-search-container input::placeholder {
+.wind-emoji-picker .epr-search-container input::placeholder {
   color: #949ba4 !important;
 }
 
-.discord-emoji-picker .epr-category-nav {
+.wind-emoji-picker .epr-category-nav {
   padding-top: 0 !important;
   padding-bottom: 10px !important;
   border-bottom: 1px solid var(--wc-emoji-border);
 }
 
-.discord-emoji-picker .epr-category-nav button {
+.wind-emoji-picker .epr-category-nav button {
   border-radius: 8px !important;
 }
 
-.discord-emoji-picker .epr-body::-webkit-scrollbar {
+.wind-emoji-picker .epr-body::-webkit-scrollbar {
   width: 10px;
 }
 
-.discord-emoji-picker .epr-body::-webkit-scrollbar-thumb {
+.wind-emoji-picker .epr-body::-webkit-scrollbar-thumb {
   background: #1a1b1e;
   border-radius: 8px;
 }
 
-.discord-emoji-picker .epr-body::-webkit-scrollbar-track {
+.wind-emoji-picker .epr-body::-webkit-scrollbar-track {
   background: transparent;
 }
 
 /* Category labels - transparent background, proper text color */
-.discord-emoji-picker .epr-emoji-category-label {
+.wind-emoji-picker .epr-emoji-category-label {
   font-size: 11px !important;
   font-weight: 700 !important;
   letter-spacing: 0.04em;
@@ -1046,27 +1046,27 @@ html {
 }
 
 /* Category content - transparent background */
-.discord-emoji-picker .epr-emoji-category-content {
+.wind-emoji-picker .epr-emoji-category-content {
   gap: 2px 0 !important;
   background-color: transparent !important;
 }
 
 /* Individual category rows - transparent */
-.discord-emoji-picker .epr-emoji-category {
+.wind-emoji-picker .epr-emoji-category {
   background-color: transparent !important;
 }
 
-.discord-emoji-picker .epr-emoji-img,
-.discord-emoji-picker .epr-emoji-native {
+.wind-emoji-picker .epr-emoji-img,
+.wind-emoji-picker .epr-emoji-native {
   filter: saturate(1.04);
 }
 
-.discord-emoji-picker--reaction.EmojiPickerReact {
+.wind-emoji-picker--reaction.EmojiPickerReact {
   width: 336px !important;
   height: 404px !important;
 }
 
-.discord-emoji-picker--composer.EmojiPickerReact {
+.wind-emoji-picker--composer.EmojiPickerReact {
   width: 372px !important;
   height: 456px !important;
 }

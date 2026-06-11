@@ -8,8 +8,8 @@ import { useChatStore } from "../lib/stores/chatStore";
 import { api } from "../lib/api";
 import { resolveMediaUrl, resolveUserAvatarUrl } from "../lib/media";
 import { getSocket } from "../lib/socket";
-import DiscordEmojiPicker from "./DiscordEmojiPicker";
-import OpenGraphEmbed from "./OpenGraphEmbed";
+import WindEmojiPicker from "./EmojiPicker";
+import OpenGraphEmbed from "./OpenGraphEmbed"; 
 import StatusDot from "./StatusDot";
 import type { Channel, DMMessage, Message, ServerMember, User } from "../types";
 
@@ -444,7 +444,7 @@ const EmojiInlineImage = ({ emoji, sizeClassName = "h-[1.3em] w-[1.3em]" }: { em
   }
 
   return (
-    <span className={`discord-inline-emoji ${sizeClassName}`}>
+    <span className={`wind-inline-emoji ${sizeClassName}`}>
       <img
         src={urls[urlIndex]}
         alt=""
@@ -599,7 +599,7 @@ const InviteEmbed = ({ inviteCode }: { inviteCode: string }): JSX.Element | null
 
   if (loading) {
     return (
-      <div className="mt-1.5 inline-flex items-center rounded-full border border-white/[0.06] bg-white/[0.04] px-3 py-1.5 text-[11px] font-medium text-discord-muted shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] backdrop-blur-sm">
+      <div className="mt-1.5 inline-flex items-center rounded-full border border-white/[0.06] bg-white/[0.04] px-3 py-1.5 text-[11px] font-medium text-wind-muted shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] backdrop-blur-sm">
         Loading invite...
       </div>
     );
@@ -658,7 +658,7 @@ const InviteEmbed = ({ inviteCode }: { inviteCode: string }): JSX.Element | null
 
         <div className="mt-3 min-w-0">
           <p className="truncate text-[18px] font-bold leading-6 text-white">{invite.server.name}</p>
-          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-discord-muted">
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-wind-muted">
             <span className="inline-flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full bg-[#23a55a]" />
               {invite.server.onlineCount} Online
@@ -668,8 +668,8 @@ const InviteEmbed = ({ inviteCode }: { inviteCode: string }): JSX.Element | null
               {invite.server.offlineCount} Offline
             </span>
           </div>
-          {establishedLabel ? <p className="mt-1 text-[11px] text-discord-muted">{establishedLabel}</p> : null}
-          {invite.server.description ? <p className="mt-3 text-[12px] leading-5 text-discord-muted">{invite.server.description}</p> : null}
+          {establishedLabel ? <p className="mt-1 text-[11px] text-wind-muted">{establishedLabel}</p> : null}
+          {invite.server.description ? <p className="mt-3 text-[12px] leading-5 text-wind-muted">{invite.server.description}</p> : null}
         </div>
 
         <div className="mt-4 flex items-center justify-end">
@@ -677,7 +677,7 @@ const InviteEmbed = ({ inviteCode }: { inviteCode: string }): JSX.Element | null
           type="button"
           onClick={() => void acceptInvite()}
           disabled={joining || joined}
-          className={`${joined ? "wc-secondary-button text-discord-muted" : "wc-accent-button text-white"} rounded-xl px-3 py-1.5 text-[11px] font-semibold disabled:opacity-60`}
+          className={`${joined ? "wc-secondary-button text-wind-muted" : "wc-accent-button text-white"} rounded-xl px-3 py-1.5 text-[11px] font-semibold disabled:opacity-60`}
         >
           {joined ? "Joined" : joining ? "Joining..." : "Join"}
         </button>
@@ -1001,7 +1001,7 @@ const VideoAttachmentPlayer = ({
     <div className="mt-2 w-full max-w-[min(90vw,520px)] overflow-hidden rounded-xl" style={{ backgroundColor: "rgba(0, 0, 0, 0.28)", border: "1px solid rgba(255, 255, 255, 0.04)" }}>
       <video src={src} controls className="video-attachment-media w-full" style={{ backgroundColor: "#000", maxHeight: "480px", objectFit: "contain" }} onLoadedMetadata={onMediaReady} />
       <div className="flex items-center justify-between gap-2 px-3 py-2">
-        <p className="truncate text-xs text-discord-muted">{attachmentName || "video"}</p>
+        <p className="truncate text-xs text-wind-muted">{attachmentName || "video"}</p>
         <a
           href={downloadUrl}
           download={attachmentName || "video"}
@@ -1505,8 +1505,8 @@ const ChatArea = ({
   const emojiMenuOpen = Boolean(emojiToken) && emojiCandidates.length > 0;
   const overlayMenuOpen = showPicker || reactionPickerFor !== null || mentionMenuOpen || emojiMenuOpen || channelMenuOpen;
   const composerMatchMenuClass = "absolute bottom-14 left-4 right-4 z-40 overflow-hidden rounded-[22px] wc-popover";
-  const composerMatchMenuHeaderClass = "border-b border-white/[0.04] px-3.5 pb-2 pt-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-discord-muted";
-  const composerMatchMenuListClass = "discord-scrollbar max-h-60 overflow-y-auto p-2";
+  const composerMatchMenuHeaderClass = "border-b border-white/[0.04] px-3.5 pb-2 pt-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-wind-muted";
+  const composerMatchMenuListClass = "wind-scrollbar max-h-60 overflow-y-auto p-2";
   const composerMatchMenuItemClass = "flex w-full items-center gap-2.5 rounded-xl px-2.5 py-1.5 text-left transition";
 
   const membersByUsername = useMemo(() => {
@@ -1824,7 +1824,7 @@ const ChatArea = ({
     if (jumboEmoji.length > 0) {
       const sizeClassName = emojiOnlySizeClass(jumboEmoji.length);
       return (
-        <span className="discord-jumbo-emoji-row" aria-label={rawContent.trim()}>
+        <span className="wind-jumbo-emoji-row" aria-label={rawContent.trim()}>
           {jumboEmoji.map((emoji, index) => (
             <EmojiGlyph key={`jumbo-${index}-${emoji}`} emoji={emoji} sizeClassName={sizeClassName} />
           ))}
@@ -1862,7 +1862,7 @@ const ChatArea = ({
           h3: ({ children }) => <h3 className="mt-3 mb-1 text-lg font-bold text-white">{renderMarkdownChildren(children, "markdown-h3")}</h3>,
           h4: ({ children }) => <h4 className="mt-2 mb-1 text-base font-bold text-white">{renderMarkdownChildren(children, "markdown-h4")}</h4>,
           h5: ({ children }) => <h5 className="mt-2 mb-1 text-sm font-bold text-white">{renderMarkdownChildren(children, "markdown-h5")}</h5>,
-          h6: ({ children }) => <h6 className="mt-2 mb-1 text-sm font-bold text-discord-muted">{renderMarkdownChildren(children, "markdown-h6")}</h6>,
+          h6: ({ children }) => <h6 className="mt-2 mb-1 text-sm font-bold text-wind-muted">{renderMarkdownChildren(children, "markdown-h6")}</h6>,
 
           // Paragraphs
           p: ({ children }) => <span className="block">{renderMarkdownChildren(children, "markdown-paragraph")}</span>,
@@ -1932,7 +1932,7 @@ const ChatArea = ({
               type="checkbox"
               checked={checked || false}
               readOnly
-              className="mr-1.5 h-4 w-4 accent-discord-blurple cursor-default"
+              className="mr-1.5 h-4 w-4 accent-wind-blurple cursor-default"
               {...props}
             />
           ),
@@ -2353,7 +2353,7 @@ const ChatArea = ({
         return;
       }
 
-      if (target.closest(".discord-emoji-picker") || target.closest("[data-emoji-picker-toggle]") || target.closest("[data-reaction-picker-toggle]")) {
+      if (target.closest(".wind-emoji-picker") || target.closest("[data-emoji-picker-toggle]") || target.closest("[data-reaction-picker-toggle]")) {
         return;
       }
 
@@ -2658,7 +2658,7 @@ const ChatArea = ({
   const composerLength = content.length;
   const composerOverLimit = composerLength > MESSAGE_CHAR_LIMIT;
   const showComposerCounter = composerLength >= MESSAGE_CHAR_WARNING_THRESHOLD;
-  const composerCounterTone = composerOverLimit ? "text-[#ed4245]" : composerLength >= MESSAGE_CHAR_LIMIT - 200 ? "text-[#f0b232]" : "text-discord-muted";
+  const composerCounterTone = composerOverLimit ? "text-[#ed4245]" : composerLength >= MESSAGE_CHAR_LIMIT - 200 ? "text-[#f0b232]" : "text-wind-muted";
 
   const submitInlineEdit = async (messageId: string): Promise<void> => {
     if (!editingDraft.trim()) {
@@ -2921,17 +2921,17 @@ const ChatArea = ({
         </span>
       </header>
 
-      <div ref={scrollRef} className="discord-scrollbar flex-1 overflow-y-auto px-3 py-4">
+      <div ref={scrollRef} className="wind-scrollbar flex-1 overflow-y-auto px-3 py-4">
           <div className="flex min-h-full flex-col justify-end">
           {hasOlderMessages ? (
             <div className="mb-2 flex justify-center">
               {loadingOlderMessages ? (
-                <div className="flex items-center gap-2 py-2 text-xs text-discord-muted">
-                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-discord-muted border-t-transparent" />
+                <div className="flex items-center gap-2 py-2 text-xs text-wind-muted">
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-wind-muted border-t-transparent" />
                   Loading older messages...
                 </div>
               ) : (
-                <div className="py-2 text-xs text-discord-muted/50 select-none">Scroll up to load more</div>
+                <div className="py-2 text-xs text-wind-muted/50 select-none">Scroll up to load more</div>
               )}
             </div>
           ) : null}
@@ -2970,7 +2970,7 @@ const ChatArea = ({
                 {showDayDivider ? (
                   <div className="mx-2 my-3 flex items-center gap-3 select-none" aria-label={formatMessageDayDivider(message.createdAt)}>
                     <div className="h-px flex-1 bg-white/10" />
-                    <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1 text-[11px] font-semibold tracking-wide text-discord-muted">
+                    <span className="rounded-full border border-white/[0.06] bg-white/[0.03] px-3 py-1 text-[11px] font-semibold tracking-wide text-wind-muted">
                       {formatMessageDayDivider(message.createdAt)}
                     </span>
                     <div className="h-px flex-1 bg-white/10" />
@@ -3011,7 +3011,7 @@ const ChatArea = ({
               >
                 {mentionMe ? <span className="pointer-events-none absolute bottom-0 left-0 top-0 w-0.5 rounded-l" style={{ backgroundColor: "var(--wc-highlight-edge)" }} /> : null}
                 {groupedCompact ? (
-                  <span className={`invisible absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-discord-muted ${overlayMenuOpen ? "" : "group-hover:visible"}`}>
+                  <span className={`invisible absolute left-2 top-1/2 -translate-y-1/2 text-[10px] text-wind-muted ${overlayMenuOpen ? "" : "group-hover:visible"}`}>
                     {new Date(message.createdAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
                   </span>
                 ) : null}
@@ -3032,7 +3032,7 @@ const ChatArea = ({
                 )}
                 <div className="min-w-0 flex-1">
                   {"replyTo" in message && message.replyTo ? (
-                    <div className="relative mb-0.5 flex items-center gap-1 text-xs text-discord-muted">
+                    <div className="relative mb-0.5 flex items-center gap-1 text-xs text-wind-muted">
                       <span className="pointer-events-none absolute -left-5 top-1 h-3 w-4">
                         <span className="absolute left-0 top-0 h-3 w-4 rounded-tl-md border-l-2 border-t-2 border-[#63656e]" />
                       </span>
@@ -3042,7 +3042,7 @@ const ChatArea = ({
                         className="h-4 w-4 shrink-0 rounded-full"
                       />
                       <button
-                        className="min-w-0 truncate text-discord-muted hover:text-discord-text"
+                        className="min-w-0 truncate text-wind-muted hover:text-wind-text"
                         onClick={() => message.replyTo?.id && jumpToMessage(message.replyTo.id)}
                       >
                         @{message.replyTo.author.nickname?.trim() || message.replyTo.author.username}
@@ -3062,7 +3062,7 @@ const ChatArea = ({
                       >
                         {authorName}
                       </button>
-                      <time className="text-xs text-discord-muted">
+                      <time className="text-xs text-wind-muted">
                         {formatMessageTimestamp(message.createdAt)}
                       </time>
                     </div>
@@ -3117,17 +3117,17 @@ const ChatArea = ({
                           />
                           {emojiMenuOpen ? (
                             <div className="wc-popover absolute bottom-full left-0 right-0 z-40 mb-2 overflow-hidden rounded-[20px]">
-                              <p className="px-3 pt-2 text-[11px] font-semibold uppercase tracking-wide text-discord-muted">
+                              <p className="px-3 pt-2 text-[11px] font-semibold uppercase tracking-wide text-wind-muted">
                                 Emojis matching :{emojiQuery}
                               </p>
-                              <div ref={editEmojiMenuListRef} className="discord-scrollbar max-h-60 overflow-y-auto py-1">
+                              <div ref={editEmojiMenuListRef} className="wind-scrollbar max-h-60 overflow-y-auto py-1">
                                 {emojiCandidates.map((emojiCandidate, index) => {
                                   const selected = index === highlightedEmojiIndex;
                                   return (
                                     <button
                                       key={emojiCandidate.unified}
                                       type="button"
-                                      className={`flex w-full items-center gap-3 px-3 py-2 text-left transition ${selected ? "bg-[var(--wc-surface-tint-strong)]" : "text-discord-text hover:bg-white/[0.05]"}`}
+                                      className={`flex w-full items-center gap-3 px-3 py-2 text-left transition ${selected ? "bg-[var(--wc-surface-tint-strong)]" : "text-wind-text hover:bg-white/[0.05]"}`}
                                       onMouseDown={(event) => {
                                         event.preventDefault();
                                         selectEmoji(emojiCandidate);
@@ -3144,7 +3144,7 @@ const ChatArea = ({
                         </div>
                       </div>
                       <div className="flex items-center justify-between gap-3">
-                        <p className="text-[11px] text-discord-muted">Enter to save, Shift+Enter for newline, Esc to cancel.</p>
+                        <p className="text-[11px] text-wind-muted">Enter to save, Shift+Enter for newline, Esc to cancel.</p>
                         <div className="flex gap-2">
                           <button
                             type="button"
@@ -3155,7 +3155,7 @@ const ChatArea = ({
                           </button>
                           <button
                             type="button"
-                            className="wc-secondary-button rounded-xl px-3 py-1.5 text-[11px] font-semibold text-discord-text transition hover:text-white"
+                            className="wc-secondary-button rounded-xl px-3 py-1.5 text-[11px] font-semibold text-wind-text transition hover:text-white"
                             onClick={() => {
                               setEditingId(null);
                               setEditingDraft("");
@@ -3168,9 +3168,9 @@ const ChatArea = ({
                     </div>
                   ) : (
                     <>
-                      <div className={`message-markdown break-words text-[15px] ${message.pending ? "text-discord-muted" : "text-discord-text"}`}>
+                      <div className={`message-markdown break-words text-[15px] ${message.pending ? "text-wind-muted" : "text-wind-text"}`}>
                         {renderMessageContent(message.content)}
-                        {message.editedAt ? <span className="ml-1 text-[10px] text-discord-muted">(edited)</span> : null}
+                        {message.editedAt ? <span className="ml-1 text-[10px] text-wind-muted">(edited)</span> : null}
                       </div>
                       {renderInviteEmbed(message.content)}
                       {renderOpenGraphEmbeds(message.content)}
@@ -3231,7 +3231,7 @@ const ChatArea = ({
                       <>
                         {!(channelReadOnly && !canModerateServerMessages) ? (
                           <button
-                            className="pointer-events-auto rounded p-1.5 text-discord-muted hover:bg-[#35373c] hover:text-white"
+                            className="pointer-events-auto rounded p-1.5 text-wind-muted hover:bg-[#35373c] hover:text-white"
                             title="Reply"
                             onClick={() => setReplyTo(message)}
                           >
@@ -3239,7 +3239,7 @@ const ChatArea = ({
                           </button>
                         ) : null}
                         <button
-                          className="pointer-events-auto rounded p-1.5 text-discord-muted hover:bg-[#35373c] hover:text-white"
+                          className="pointer-events-auto rounded p-1.5 text-wind-muted hover:bg-[#35373c] hover:text-white"
                           title="React"
                           data-reaction-picker-toggle="true"
                           onClick={(event) => toggleReactionPicker(message.id, event.currentTarget)}
@@ -3250,14 +3250,14 @@ const ChatArea = ({
                     ) : (
                       <>
                         <button
-                          className="rounded p-1.5 text-discord-muted hover:bg-[#35373c] hover:text-white"
+                          className="rounded p-1.5 text-wind-muted hover:bg-[#35373c] hover:text-white"
                           title="Reply"
                           onClick={() => setReplyTo(message)}
                         >
                           <Reply size={14} />
                         </button>
                         <button
-                          className="pointer-events-auto rounded p-1.5 text-discord-muted hover:bg-[#35373c] hover:text-white"
+                          className="pointer-events-auto rounded p-1.5 text-wind-muted hover:bg-[#35373c] hover:text-white"
                           title="React"
                           data-reaction-picker-toggle="true"
                           onClick={(event) => toggleReactionPicker(message.id, event.currentTarget)}
@@ -3270,7 +3270,7 @@ const ChatArea = ({
                       <>
                         {mode === "SERVER" || mode === "DM" ? (
                           <button
-                            className="pointer-events-auto rounded p-1.5 text-discord-muted hover:bg-[#35373c] hover:text-white"
+                            className="pointer-events-auto rounded p-1.5 text-wind-muted hover:bg-[#35373c] hover:text-white"
                             title="Edit"
                             onClick={() => {
                               setEditingId(message.id);
@@ -3281,7 +3281,7 @@ const ChatArea = ({
                           </button>
                         ) : null}
                         <button
-                          className="pointer-events-auto rounded p-1.5 text-discord-muted hover:bg-[#35373c] hover:text-red-300"
+                          className="pointer-events-auto rounded p-1.5 text-wind-muted hover:bg-[#35373c] hover:text-red-300"
                           title="Delete"
                           onClick={() => {
                             if (mode === "DM" && activeDMId) {
@@ -3296,7 +3296,7 @@ const ChatArea = ({
                       </>
                     ) : mode === "SERVER" && canDeleteMessage(message) ? (
                       <button
-                        className="pointer-events-auto rounded p-1.5 text-discord-muted hover:bg-[#35373c] hover:text-red-300"
+                        className="pointer-events-auto rounded p-1.5 text-wind-muted hover:bg-[#35373c] hover:text-red-300"
                         title="Delete"
                         onClick={() => void deleteMessage(message.id)}
                       >
@@ -3308,7 +3308,7 @@ const ChatArea = ({
 
                 {reactionPickerFor?.messageId === message.id ? (
                   <div className={`absolute right-2 z-50 ${reactionPickerFor.placement === "above" ? "bottom-8" : "top-8"}`}>
-                    <DiscordEmojiPicker
+                    <WindEmojiPicker
                       variant="reaction"
                       onEmojiClick={(emoji, shiftKey) => {
                         onToggleReaction(message.id, emoji);
@@ -3346,10 +3346,10 @@ const ChatArea = ({
       <form onSubmit={onSubmit} className="relative border-t border-white/[0.04] px-4 pb-4 pt-3">
         {channelReadOnly && !canModerateServerMessages ? (
           <div className="wc-compose-box rounded-2xl px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
-            <p className="cursor-default select-none py-[3px] text-sm text-discord-muted">This channel is read-only.</p>
+            <p className="cursor-default select-none py-[3px] text-sm text-wind-muted">This channel is read-only.</p>
           </div>
         ) : null}
-        <div className="pointer-events-none absolute bottom-full left-0 right-0 px-4 pb-1 text-xs text-discord-muted">
+        <div className="pointer-events-none absolute bottom-full left-0 right-0 px-4 pb-1 text-xs text-wind-muted">
           <AnimatePresence initial={false} mode="wait">
             {typingLabel ? (
               <motion.div
@@ -3373,7 +3373,7 @@ const ChatArea = ({
         />
 
         {replyTo ? (
-          <div className="mb-2 flex items-center justify-between rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2 text-xs text-discord-muted backdrop-blur-sm">
+          <div className="mb-2 flex items-center justify-between rounded-2xl border border-white/[0.06] bg-black/20 px-3 py-2 text-xs text-wind-muted backdrop-blur-sm">
             <span className="truncate">
               Replying to {replyTo.author.nickname?.trim() || replyTo.author.username}
               {replyTo.attachmentUrl ? <span className="ml-2 inline-flex items-center gap-1"><Paperclip size={11} />Attachment</span> : null}
@@ -3399,7 +3399,7 @@ const ChatArea = ({
                     preload="metadata"
                   />
                 ) : (
-                  <div className="grid h-36 w-56 place-items-center text-discord-muted">
+                  <div className="grid h-36 w-56 place-items-center text-wind-muted">
                     <Paperclip size={40} />
                   </div>
                 )}
@@ -3419,7 +3419,7 @@ const ChatArea = ({
                 </div>
               </div>
               {attachment.type.startsWith("image/") ? (
-                <label className="mt-2 inline-flex items-center gap-2 text-xs text-discord-muted">
+                <label className="mt-2 inline-flex items-center gap-2 text-xs text-wind-muted">
                   <input
                     type="checkbox"
                     checked={attachmentSpoiler}
@@ -3434,7 +3434,7 @@ const ChatArea = ({
           ) : null}
 
           <div className="flex items-center gap-2">
-            <button type="button" className="text-discord-muted hover:text-white" onClick={() => fileInputRef.current?.click()}>
+            <button type="button" className="text-wind-muted hover:text-white" onClick={() => fileInputRef.current?.click()}>
               <Paperclip size={18} />
             </button>
             <div className="relative min-w-0 flex-1">
@@ -3637,7 +3637,7 @@ const ChatArea = ({
             </div>
             <button
               type="button"
-              className="text-discord-muted hover:text-white"
+              className="text-wind-muted hover:text-white"
               data-emoji-picker-toggle="composer"
               onClick={() => setShowPicker((v) => !v)}
             >
@@ -3677,7 +3677,7 @@ const ChatArea = ({
                       </div>
                       <div className="min-w-0 flex flex-1 items-center gap-2">
                         <div className="truncate text-[13px] font-medium text-white">@{candidate.display}</div>
-                        <div className="truncate text-[11px] text-discord-muted">
+                        <div className="truncate text-[11px] text-wind-muted">
                           {candidate.value === "everyone" ? "Notifies all members" : "Notifies online members"}
                         </div>
                       </div>
@@ -3706,7 +3706,7 @@ const ChatArea = ({
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-[13px] font-medium text-white">{display}</div>
-                      <div className="mt-0.5 truncate text-[11px] text-discord-muted">@{member.user.username}</div>
+                      <div className="mt-0.5 truncate text-[11px] text-wind-muted">@{member.user.username}</div>
                     </div>
                   </button>
                 );
@@ -3733,12 +3733,12 @@ const ChatArea = ({
                       selectChannel(channel);
                     }}
                   >
-                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.04] text-[13px] font-semibold text-discord-muted">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.04] text-[13px] font-semibold text-wind-muted">
                       #
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-[13px] font-medium text-white">{channel.name}</div>
-                      <div className="mt-0.5 text-[11px] text-discord-muted">Insert channel mention</div>
+                      <div className="mt-0.5 text-[11px] text-wind-muted">Insert channel mention</div>
                     </div>
                   </button>
                 );
@@ -3770,7 +3770,7 @@ const ChatArea = ({
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="truncate text-[13px] font-medium text-white">:{emojiCandidate.name}:</div>
-                      <div className="mt-0.5 text-[11px] text-discord-muted">Insert emoji</div>
+                      <div className="mt-0.5 text-[11px] text-wind-muted">Insert emoji</div>
                     </div>
                   </button>
                 );
@@ -3781,7 +3781,7 @@ const ChatArea = ({
 
         {showPicker ? (
           <div ref={composerPickerRef} className="absolute bottom-16 right-4 z-50">
-            <DiscordEmojiPicker
+            <WindEmojiPicker
               variant="composer"
               onEmojiClick={(emoji, shiftKey) => {
                 const separator = content.length > 0 && !/\s$/.test(content) ? " " : "";

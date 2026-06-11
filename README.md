@@ -4,6 +4,9 @@
 
 A free chat platform built as a no-nonsense alternative to Discord: no invasive data collection, no paywalls, no Nitro.
 
+> [!NOTE]
+> Windcord is an independent project and is not affiliated with, endorsed by, or connected to Discord or Discord Inc.
+
 ## Why Windcord?
 
 Discord has become the default community platform, but it comes with real tradeoffs: invasive data collection, aggressive monetization, and an ever-growing list of features locked behind a subscription. Windcord is built on the belief that real-time communication should just be free, with every feature available to every user from day one.

@@ -4,7 +4,7 @@ import { Hash, Lock, Trash2, X } from "lucide-react";
 import { useBackdropClose } from "../lib/useBackdropClose";
 import type { Channel } from "../types";
 
-// Discord-style filled megaphone/speaker icon for announcement channels
+// Windcord-style filled megaphone/speaker icon for announcement channels
 const AnnouncementIcon = ({ size = 18, className = "" }: { size?: number; className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 14 14" fill="currentColor" className={className}>
     <path fillRule="evenodd" clipRule="evenodd" d="M7.933.767a.75.75 0 0 0-1.5 0v.754a.75.75 0 0 0 1.5 0zM6.595 2.928a.75.75 0 0 1 1.024.275l3.858 6.681a.75.75 0 0 1-1.299.75l-.055-.096l-3.092.718a2.171 2.171 0 0 1-3.97 1.664l-.002-.003l-.376-.651l-1.454.337a.5.5 0 0 1-.546-.237l-.609-1.055a.5.5 0 0 1 .068-.591l6.235-6.67l-.057-.097a.75.75 0 0 1 .275-1.025M4.21 11.911l1.357-.315a.671.671 0 0 1-1.21.57zm9.78-5.088a.75.75 0 0 1-.75.75h-.754a.75.75 0 0 1 0-1.5h.753a.75.75 0 0 1 .75.75Zm-12.108.75a.75.75 0 1 0 0-1.5h-.754a.75.75 0 1 0 0 1.5zm2.182-3.868a.75.75 0 0 1-1.06 0l-.634-.634a.75.75 0 1 1 1.06-1.06l.635.633a.75.75 0 0 1 0 1.061Zm7.932-.634a.75.75 0 0 0-1.06-1.06l-.642.64a.75.75 0 1 0 1.061 1.061z" />
@@ -83,15 +83,15 @@ const ChannelSettingsModal = ({ open, channel, onClose, onRename, onToggleReadOn
             <div className="flex items-center justify-between border-b border-white/[0.03] px-5 py-4">
               <div className="flex items-center gap-2">
                 {channel.isAnnouncement ? (
-                  <AnnouncementIcon size={18} className="text-discord-muted" />
+                  <AnnouncementIcon size={18} className="text-wind-muted" />
                 ) : (
-                  <Hash size={18} className="text-discord-muted" />
+                  <Hash size={18} className="text-wind-muted" />
                 )}
                 <h2 className="text-base font-semibold">{channel.name}</h2>
               </div>
               <button
                 type="button"
-                className="rounded p-1 text-discord-muted transition hover:bg-white/[0.06] hover:text-white"
+                className="rounded p-1 text-wind-muted transition hover:bg-white/[0.06] hover:text-white"
                 onClick={onClose}
               >
                 <X size={18} />
@@ -101,7 +101,7 @@ const ChannelSettingsModal = ({ open, channel, onClose, onRename, onToggleReadOn
             {/* Body */}
             <form onSubmit={handleSubmit} className="p-5">
               {/* Overview section */}
-              <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-discord-muted">Channel Name</p>
+              <p className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-wind-muted">Channel Name</p>
               <input
                 className="wc-input-surface w-full rounded-xl px-3 py-2 text-sm text-white"
                 value={name}
@@ -111,15 +111,15 @@ const ChannelSettingsModal = ({ open, channel, onClose, onRename, onToggleReadOn
               />
 
               {/* Permissions section */}
-              <p className="mb-3 mt-5 text-[11px] font-semibold uppercase tracking-wide text-discord-muted">Permissions</p>
+              <p className="mb-3 mt-5 text-[11px] font-semibold uppercase tracking-wide text-wind-muted">Permissions</p>
 
               {/* Read-only toggle */}
               <label className="wc-input-surface mb-2 flex cursor-pointer items-center justify-between rounded-xl px-3 py-3">
                 <div className="flex items-center gap-2">
-                  <Lock size={15} className="text-discord-muted" />
+                  <Lock size={15} className="text-wind-muted" />
                   <div>
                     <p className="text-sm font-medium text-white">Read-only</p>
-                    <p className="text-[11px] text-discord-muted">Only admins and the owner can send messages</p>
+                    <p className="text-[11px] text-wind-muted">Only admins and the owner can send messages</p>
                   </div>
                 </div>
                 <button
@@ -139,10 +139,10 @@ const ChannelSettingsModal = ({ open, channel, onClose, onRename, onToggleReadOn
               {/* Announcement toggle */}
               <label className="wc-input-surface flex cursor-pointer items-center justify-between rounded-xl px-3 py-3">
                 <div className="flex items-center gap-2">
-                  <AnnouncementIcon size={15} className="text-discord-muted" />
+                  <AnnouncementIcon size={15} className="text-wind-muted" />
                   <div>
                     <p className="text-sm font-medium text-white">Announcement Channel</p>
-                    <p className="text-[11px] text-discord-muted">Shows a megaphone icon instead of #</p>
+                    <p className="text-[11px] text-wind-muted">Shows a megaphone icon instead of #</p>
                   </div>
                 </div>
                 <button
@@ -176,7 +176,7 @@ const ChannelSettingsModal = ({ open, channel, onClose, onRename, onToggleReadOn
                   <button
                     type="button"
                     onClick={onClose}
-                    className="text-sm text-discord-muted hover:text-white"
+                    className="text-sm text-wind-muted hover:text-white"
                   >
                     Cancel
                   </button>

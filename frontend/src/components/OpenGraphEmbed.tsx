@@ -234,7 +234,7 @@ const OpenGraphEmbed = ({ url }: Props): JSX.Element | null => {
         <div className="flex min-h-[148px]">
           <div className="w-1 shrink-0" style={{ backgroundColor: YOUTUBE_ACCENT }} />
           <div className="min-w-0 flex-1 p-3">
-            <div className="flex items-center gap-2 text-xs text-discord-muted">
+            <div className="flex items-center gap-2 text-xs text-wind-muted">
               {faviconUrl ? (
                 <img src={faviconUrl} alt="" className="h-4 w-4 rounded-sm object-cover" loading="lazy" referrerPolicy="no-referrer" />
               ) : (
@@ -328,7 +328,7 @@ const OpenGraphEmbed = ({ url }: Props): JSX.Element | null => {
         <div className="min-w-0 flex-1 p-3.5">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2 text-xs text-discord-muted">
+              <div className="flex items-center gap-2 text-xs text-wind-muted">
                 {embed.faviconUrl ? (
                   <img src={embed.faviconUrl} alt="" className="h-4 w-4 rounded-sm object-cover" loading="lazy" referrerPolicy="no-referrer" />
                 ) : (
@@ -342,15 +342,15 @@ const OpenGraphEmbed = ({ url }: Props): JSX.Element | null => {
                     <Globe size={12} />
                   </span>
                 )}
-                <span className="truncate text-[11px] font-semibold uppercase tracking-[0.14em] text-discord-muted">{siteLabel}</span>
+                <span className="truncate text-[11px] font-semibold uppercase tracking-[0.14em] text-wind-muted">{siteLabel}</span>
               </div>
               <p className="mt-2 text-[17px] font-semibold leading-6 text-white">{title}</p>
               {embed.description ? (
-                <p className="mt-1.5 text-sm leading-5 text-discord-text" style={{ ...clampStyle, WebkitLineClamp: 3 }}>
+                <p className="mt-1.5 text-sm leading-5 text-wind-text" style={{ ...clampStyle, WebkitLineClamp: 3 }}>
                   {embed.description}
                 </p>
               ) : null}
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-discord-muted">
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-wind-muted">
                 <span
                   className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-white/[0.06] px-2.5 py-1"
                   style={{ background: "color-mix(in srgb, var(--wc-surface-tint-strong) 68%, transparent)" }}

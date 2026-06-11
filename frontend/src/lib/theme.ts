@@ -28,11 +28,11 @@ export const WINDCORD_THEME_OPTIONS: WindcordThemeOption[] = [
     description: "Icy slate panels with a brighter, cleaner contrast profile.",
     preview: ["#78c8ff", "#243747", "#0f1720"]
   },
-  // NEW: Classic Discord theme - flat, no gradients, original Discord aesthetic
+  // NEW: Classic theme - flat, no gradients, original aesthetic
   {
     id: "classic",
-    label: "Classic Discord",
-    description: "The original Discord look. Flat colors, no gradients, soft muted accents.",
+    label: "Classic",
+    description: "The original look. Flat colors, no gradients, soft muted accents.",
     preview: ["#5865f2", "#36393f", "#2f3136"]
   },
   // NEW: Midnight Deep - deeper purple/blue variant

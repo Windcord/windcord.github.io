@@ -1,7 +1,7 @@
 import { ChevronDown, FolderPlus, Hash, Lock, LogOut, Pencil, Plus, Settings, Trash2 } from "lucide-react";
 import { resolveMediaUrl } from "../lib/media";
 
-// Discord-style filled megaphone/speaker icon for announcement channels
+// Windcord-style filled megaphone/speaker icon for announcement channels
 const AnnouncementIcon = ({ size = 16, className = "" }: { size?: number; className?: string }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 14 14" fill="currentColor" className={className}>
     <path fillRule="evenodd" clipRule="evenodd" d="M7.933.767a.75.75 0 0 0-1.5 0v.754a.75.75 0 0 0 1.5 0zM6.595 2.928a.75.75 0 0 1 1.024.275l3.858 6.681a.75.75 0 0 1-1.299.75l-.055-.096l-3.092.718a2.171 2.171 0 0 1-3.97 1.664l-.002-.003l-.376-.651l-1.454.337a.5.5 0 0 1-.546-.237l-.609-1.055a.5.5 0 0 1 .068-.591l6.235-6.67l-.057-.097a.75.75 0 0 1 .275-1.025M4.21 11.911l1.357-.315a.671.671 0 0 1-1.21.57zm9.78-5.088a.75.75 0 0 1-.75.75h-.754a.75.75 0 0 1 0-1.5h.753a.75.75 0 0 1 .75.75Zm-12.108.75a.75.75 0 1 0 0-1.5h-.754a.75.75 0 1 0 0 1.5zm2.182-3.868a.75.75 0 0 1-1.06 0l-.634-.634a.75.75 0 1 1 1.06-1.06l.635.633a.75.75 0 0 1 0 1.061Zm7.932-.634a.75.75 0 0 0-1.06-1.06l-.642.64a.75.75 0 1 0 1.061 1.061z" />
@@ -167,7 +167,7 @@ const ChannelList = ({
   };
 
   return (
-    <aside className="flex h-full w-60 flex-col bg-transparent text-discord-text">
+    <aside className="flex h-full w-60 flex-col bg-transparent text-wind-text">
       <div className="wc-sidebar-header overflow-hidden">
         {serverBannerStyle ? (
           <div className="relative h-28" style={serverBannerStyle}>
@@ -198,15 +198,15 @@ const ChannelList = ({
             <h2 className="truncate text-sm font-bold">{serverName || "Channels"}</h2>
             {canManage ? (
               <div className="flex items-center gap-1">
-                <button className="rounded-lg p-1.5 text-discord-muted transition hover:bg-white/5 hover:text-white" onClick={onCreateCategory} title="Create category">
+                <button className="rounded-lg p-1.5 text-wind-muted transition hover:bg-white/5 hover:text-white" onClick={onCreateCategory} title="Create category">
                   <FolderPlus size={15} />
                 </button>
-                <button className="rounded-lg p-1.5 text-discord-muted transition hover:bg-white/5 hover:text-white" onClick={onCreateChannel} title="Create channel">
+                <button className="rounded-lg p-1.5 text-wind-muted transition hover:bg-white/5 hover:text-white" onClick={onCreateChannel} title="Create channel">
                   <Plus size={16} />
                 </button>
               </div>
             ) : (
-              <button className="rounded-lg p-1.5 text-discord-muted transition hover:bg-white/5 hover:text-red-300" onClick={onLeaveServer} title="Leave server">
+              <button className="rounded-lg p-1.5 text-wind-muted transition hover:bg-white/5 hover:text-red-300" onClick={onLeaveServer} title="Leave server">
                 <LogOut size={16} />
               </button>
             )}
@@ -214,7 +214,7 @@ const ChannelList = ({
         )}
       </div>
 
-      <div className="discord-scrollbar flex-1 overflow-y-auto px-2.5 py-3">
+      <div className="wind-scrollbar flex-1 overflow-y-auto px-2.5 py-3">
         {grouped.map(({ category, channels: categoryChannels }) => {
           const isCollapsed = collapsed[category.id];
           const isCategoryDragOver = dragOverCategoryId === category.id && draggedType === "channel";
@@ -238,15 +238,15 @@ const ChannelList = ({
               onDrop={(e) => handleCategoryDrop(category.id, e)}
               className={`mb-3 rounded transition-colors ${
                 isCategoryDragOver
-                  ? "ring-1 ring-discord-blurple/50"
+                  ? "ring-1 ring-wind-blurple/50"
                   : isCategoryReorderTarget
-                    ? "ring-2 ring-discord-blurple"
+                    ? "ring-2 ring-wind-blurple"
                     : ""
               }`}
             >
               <button
                 onClick={() => setCollapsed((prev) => ({ ...prev, [category.id]: !prev[category.id] }))}
-                className="flex w-full items-center gap-1 px-1.5 py-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-discord-muted transition hover:text-discord-text"
+                className="flex w-full items-center gap-1 px-1.5 py-0.5 text-xs font-semibold uppercase tracking-[0.16em] text-wind-muted transition hover:text-wind-text"
               >
                 <ChevronDown size={14} className={`transition ${isCollapsed ? "-rotate-90" : ""}`} />
                 {category.name}
@@ -301,13 +301,13 @@ const ChannelList = ({
                         onDrop={(event) => handleChannelDrop(channel.id, category.id, event)}
                         onClick={() => onSelectChannel(channel.id)}
                         className={`group/channel relative flex w-full items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-left text-[15px] transition ${
-                          isChannelDragOver ? "ring-1 ring-discord-blurple" : ""
+                          isChannelDragOver ? "ring-1 ring-wind-blurple" : ""
                         } ${
                           active
                             ? "border-white/[0.06] text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
                             : hasUnread || hasMention
                               ? "border-transparent text-white hover:border-white/[0.04] hover:bg-white/[0.05]"
-                              : "border-transparent text-discord-muted hover:border-white/[0.03] hover:bg-white/[0.04] hover:text-discord-text"
+                              : "border-transparent text-wind-muted hover:border-white/[0.03] hover:bg-white/[0.04] hover:text-wind-text"
                         }`} style={active ? { background: "var(--wc-channel-active-bg)" } : undefined}
                       >
                         {!active && hasUnread && !hasMention ? (
@@ -320,7 +320,7 @@ const ChannelList = ({
                         )}
                         <span className="min-w-0 flex-1 truncate">{channel.name}</span>
                         {channel.readOnly ? (
-                          <Lock size={11} className="shrink-0 text-discord-muted" />
+                          <Lock size={11} className="shrink-0 text-wind-muted" />
                         ) : null}
                         {canManage ? (
                           <div
