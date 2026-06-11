@@ -13,6 +13,7 @@
     "build:desktop": "cross-env VITE_BASE_PATH=./ npm --prefix frontend run build && electron-builder"
   },
   "devDependencies": {
+    "@types/node": "^25.9.3",
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
     "electron": "^42.4.0",
