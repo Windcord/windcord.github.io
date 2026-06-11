@@ -24,15 +24,26 @@
     "productName": "Windcord",
     "files": [
       "electron/**/*",
-      "frontend/dist/**/*"
+      "frontend/dist/**/*",
+      "disc.ico"
     ],
     "directories": {
       "buildResources": "electron/build"
     },
     "win": {
+      "icon": "disc.ico",
       "target": [
         "nsis"
       ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "disc.ico",
+      "uninstallerIcon": "disc.ico",
+      "installerHeaderIcon": "disc.ico"
     }
   }
 }
